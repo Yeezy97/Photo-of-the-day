@@ -1,0 +1,25 @@
+extends ../templates/layout
+
+
+block main 
+  main
+      .container
+        .backdrop
+            .modal
+                .modal-content
+                h2 Sign-Up to unlock features
+                form(action='/login', method='post')
+                    .input-group
+                        label(for='email') Email
+                        input(type='email', id='email', name='email', required)
+                    .input-group
+                    label(for='email') First Name
+                    input(type='email', id='email', name='email', required)
+                    .input-group
+                    label(for='email') Last Name
+                    input(type='email', id='email', name='email', required)
+                    .input-group
+                    label(for='email') Password
+                    input(type='email', id='email', name='email', required)                    
+                   
+                    button(type='submit') Submit

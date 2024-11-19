@@ -1,0 +1,136 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;   
+    background-color: antiquewhite;
+    padding: .6rem;
+}
+
+.nav-sec-1, .nav-sec-3{
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+    width: 15rem;
+  }
+  
+.nav-sec-1 > a, .nav-sec-3 > a  {
+      text-decoration: none;
+    color: inherit;
+    outline: 0;
+    margin-top: .4rem;
+  }
+  
+  
+.nav-sec-2{
+    font-size: 2.5rem;
+    margin-right : 50px;
+
+  }
+
+  .nav-sec-2 > a{
+    text-decoration: none;
+    color: inherit;
+    outline: 0;
+
+  }
+  
+  
+/* about page */
+.about-sec {
+    margin-top: 15rem;
+
+    font-size: 3rem;
+    background-color: beige;
+    display: grid;
+    justify-items: center;
+}
+
+div > h2 {
+    font-size: 2.5rem;
+    margin-top: 2rem;
+
+}
+
+
+/* login */
+
+
+ .container{
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+    padding: 0;
+ 
+    background: url('background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    backdrop-filter: blur(10px);
+ } 
+  
+  .backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 40%;
+    padding: 20px;
+    text-align: center;
+    border: rgb(165, 41, 41) 3px solid;
+  }
+  
+  .modal-content {
+    position: relative;
+  }
+  
+  .input-group {
+    margin-bottom: 30px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    display: inline-block;
+    text-align: center;
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button {
+    text-align: center;
+    margin: auto;
+    display: flex;
+    align-content: center;
+    margin-top: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #555;
+  }

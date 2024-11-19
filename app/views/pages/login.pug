@@ -1,0 +1,18 @@
+
+extends ../templates/layout
+
+block main 
+  main
+      .container
+        .backdrop
+            .modal
+                .modal-content
+                h2 Login to See more
+                form(action='/login', method='post')
+                    .input-group
+                        label(for='email') Email
+                        input(type='email', id='email', name='email', required)
+                    .input-group
+                        label(for='password') Password
+                        input(type='password', id='password', name='password', required)
+                        button(type='submit') Submit

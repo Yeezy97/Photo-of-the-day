@@ -27,7 +27,21 @@ app.get("/", function (req, res) {
 });
 
 app.get("/home", function (req, res) {
-  res.render("home");
+  const posts = [
+    {
+      postid: 1,
+      title: "Post One",
+      description: "This is the first post description.",
+      image: "/images/post1.jpg",
+    },
+    {
+      postid: 2,
+      title: "Post Two",
+      description: "This is the second post description.",
+      image: "/images/post2.jpg",
+    },
+  ];
+  res.render("home", { posts });
 });
 
 app.get("/about", function (req, res) {
@@ -36,6 +50,24 @@ app.get("/about", function (req, res) {
 
 app.get("/login", function (req, res) {
   res.render("login");
+});
+
+app.get("/post", function (req, res) {
+  const posts = [
+    {
+      postid: 1,
+      title: "Post One",
+      description: "This is the first post description.",
+      image: "/images/post1.jpg",
+    },
+    {
+      postid: 2,
+      title: "Post Two",
+      description: "This is the second post description.",
+      image: "/images/post2.jpg",
+    },
+  ];
+  res.render("posts", { posts });
 });
 
 app.get("/signup", function (req, res) {

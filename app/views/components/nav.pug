@@ -1,11 +1,38 @@
-nav
-  .nav-sec-1
-    a(href='/home') Logo
-    a(href='/') Today
-    a(href='/') Explore
-  .nav-sec-2
-    a(href='/home') PhotoMania
-  .nav-sec-3
-    a(href='/about') About
-    a(href='/login') Login
-    a(href='/signup') Signup
+nav.navbar
+  div
+    div
+      a(href='/home')
+        img.logo-img(src='/image/logo.png' alt='website logo')
+    .nav-list
+      li
+        a.hideOnMobile(href='#') Today
+      li
+        a.hideOnMobile(href='#') Explore
+  .brand-name
+    a(href='/home')
+      span P
+      | hoto
+      span M
+      | ania
+  .nav-menu
+    ul.nav-list
+      li.hideOnMobile
+        a(href='/about') About
+      a.login-button(href='/login') Login
+      a.signup-button.hideOnMobile(href='/signup') Signup
+      span.mobile-menu-icon
+        svg(xmlns='http://www.w3.org/2000/svg' height='28' viewbox='0 96 960 960' width='28')
+          path(d='M120 816v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z')
+  // Mobile Navigation Bar
+  .sidenav.active
+    span.mobile-menu-close
+      svg(xmlns='http://www.w3.org/2000/svg' height='26' viewbox='0 96 960 960' width='26')
+        path(d='m249 849-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z')
+    ul.nav-list
+      li
+        a(href='#') Today
+      li
+        a(href='#') Explore
+      li
+        a(href='/signup') Signup
+script(src='/js/script.js')

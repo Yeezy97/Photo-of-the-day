@@ -194,11 +194,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: calc(100vh - 4.5rem);
   margin: 0;
   padding: 0;
-
-  background: url("background.jpg") no-repeat center center fixed;
+  background-color: #c0c0f0;
   background-size: cover;
   backdrop-filter: blur(10px);
 }
@@ -209,25 +208,33 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
+  background: rgba(250, 135, 135, 0.909);
+  backdrop-filter: blur(70px);
 }
 
 .modal {
   background: rgba(255, 255, 255, 0.8);
-  border-radius: 10px;
+  border-radius: 1.8rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 40%;
+  width: 35rem;
   padding: 20px;
   text-align: center;
-  border: rgb(165, 41, 41) 3px solid;
+  border: rgb(236, 54, 54) 2px solid;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  backdrop-filter: blur(23px);
 }
 
 .modal-content {
   position: relative;
+}
+
+.modal-content h2 {
+  margin-bottom: 1rem;
 }
 
 .input-group {
@@ -257,13 +264,27 @@ button {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
-  background-color: #333;
   color: white;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #555;
+  background-color: #f62929;
+  color: lightblue;
+}
+
+.submit-button {
+  background-color: rgb(236, 54, 54);
+  padding: 0.5rem 4rem;
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+}
+
+.login-logo {
+  margin-left: 0.5rem;
+  margin-bottom: 0.6rem;
+  width: 40px;
+  height: 40px;
 }
 
 /* card */
@@ -362,7 +383,7 @@ button:hover {
   top: 28rem;
 }
 
-.container img {
+.about-container img {
   width: 100%;
   height: auto;
 }
@@ -379,7 +400,16 @@ button:hover {
 .about-text p {
   font-size: 1rem;
 }
+/* login / signup */
 
+.modal {
+  width: 70%;
+  padding: 20px;
+}
+
+.modal-content h2 {
+  font-size: 1rem;
+}
 }
 @media (max-width: 400px) {
   /* about page  */

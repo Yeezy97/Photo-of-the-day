@@ -113,18 +113,79 @@
 }
 
 /* about page */
-.about-sec {
-  margin-top: 15rem;
-
-  font-size: 3rem;
-  background-color: beige;
-  display: grid;
-  justify-items: center;
+.container {
+  position: relative;
+  min-height: 100vh;
 }
 
-div > h2 {
-  font-size: 2.5rem;
-  margin-top: 2rem;
+.container img {
+  width: 100%;
+  height: auto;
+}
+
+.text-area {
+  position: absolute;
+  text-align: center;
+
+  left: 50%;
+  top: 10%;
+  transform: translate(-50%, -50%);
+  /* box-shadow: -10px 0 10px rgba(0, 0, 0, 0.1); */
+}
+
+.about-heading {
+  width: 40%;
+
+  background-image: linear-gradient(
+    to right top,
+    #d16ba5,
+    #c777b9,
+    #ba83ca,
+    #aa8fd8,
+    #9a9ae1,
+    #8aa7ec,
+    #79b3f4,
+    #69bff8,
+    #52cffe,
+    #41dfff,
+    #46eefa,
+    #5ffbf1
+  );
+  top: 5rem;
+  border-radius: 1rem 1rem 3rem 3rem;
+  padding: 0 1rem;
+  box-shadow: -10px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.about-heading h1 {
+  font-size: 2.2rem;
+  font-family: cursive;
+}
+
+.about-text {
+  width: 60%;
+  backdrop-filter: blur(80px);
+  top: 30rem;
+  border-radius: 1rem;
+  padding-bottom: 2.5rem;
+  padding-right: 2.5rem;
+  padding-left: 2.5rem;
+}
+
+.about-text h2 {
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: rgb(10, 10, 12);
+  padding-top: 2.5rem;
+  color: #1e1ef8;
+}
+
+.about-text p {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #5151e4;
+  color: #1e1ef8;
+  color: #0b0b0b;
 }
 
 /* login */
@@ -295,5 +356,55 @@ button:hover {
     position: absolute;
     right: 2rem;
     top: 2rem;
+  }
+/* about page  */
+.about-text {
+  top: 28rem;
+}
+
+.container img {
+  width: 100%;
+  height: auto;
+}
+
+.about-heading h1 {
+  font-size: 1.3rem;
+}
+.about-text h2 {
+  font-size: 1.5rem;
+
+  padding-top: 2.5rem;
+}
+
+.about-text p {
+  font-size: 1rem;
+}
+
+}
+@media (max-width: 400px) {
+  /* about page  */
+  .about-text {
+    top: 19rem;
+  }
+  .about-heading {
+    top: 2rem;
+  }
+
+  .about-heading h1 {
+    font-size: 0.8rem;
+  }
+
+  .about-text h2 {
+    font-size: 1rem;
+    padding-top: 1rem;
+  }
+
+  .about-text p {
+    font-size: 0.8rem;
+  }
+
+  .card {
+    width: 100%;
+    height: 350px;
   }
 }

@@ -315,8 +315,7 @@ button:hover {
     display: block;
     cursor: pointer;
   }
-}
-@media (max-width: 800px) {
+
   .sidenav {
     background-color: rgb(237, 237, 237, 0.9);
     backdrop-filter: blur(50px);
@@ -327,6 +326,7 @@ button:hover {
     /* display: grid; */
     position: fixed;
     justify-content: center;
+    z-index: 999;
   }
 
   .sidenav .nav-list {
@@ -357,29 +357,28 @@ button:hover {
     right: 2rem;
     top: 2rem;
   }
-/* about page  */
-.about-text {
-  top: 28rem;
-}
+  /* about page  */
+  .about-text {
+    top: 28rem;
+  }
 
-.container img {
-  width: 100%;
-  height: auto;
-}
+  .container img {
+    width: 100%;
+    height: auto;
+  }
 
-.about-heading h1 {
-  font-size: 1.3rem;
-}
-.about-text h2 {
-  font-size: 1.5rem;
+  .about-heading h1 {
+    font-size: 1.3rem;
+  }
+  .about-text h2 {
+    font-size: 1.5rem;
 
-  padding-top: 2.5rem;
-}
+    padding-top: 2.5rem;
+  }
 
-.about-text p {
-  font-size: 1rem;
-}
-
+  .about-text p {
+    font-size: 1rem;
+  }
 }
 @media (max-width: 400px) {
   /* about page  */

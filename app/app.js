@@ -41,7 +41,9 @@ app.get("/home", function (req, res) {
   //     image: "/images/post2.jpg",
   //   },
   // ];
-  sql = "select * from post";
+  // sql = "select * from post";
+  sql =
+    "SELECT Post.post_id,Post.title,Post.image_url,Post.description,Post.location,Post.created_at AS post_created_at,User.user_id, User.username, User.email, User.profile_pic_url, User.gender, User.first_name, User.last_name, User.dob, User.age,User.created_at AS user_created_at FROM Post JOIN User ON Post.user_id = User.user_id";
   db.query(sql).then((results) => {
     console.log(results);
     res.render("home", { posts: results });

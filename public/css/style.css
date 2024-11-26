@@ -315,7 +315,7 @@ button:hover {
   bottom: -3rem;
   left: 0rem;
   width: 100%;
-  padding: 0.2rem 0.8rem;
+  padding: 0.3rem 0.8rem;
   border-radius: 0.3rem 0.3rem 0rem 0rem;
   /* display: none; */
   background-color: rgb(255, 255, 255);
@@ -329,7 +329,7 @@ button:hover {
   transform: translateY(-3rem);
 }
 
-.card img {
+.card > img {
   width: 100%;
   height: 100%;
 }
@@ -346,6 +346,25 @@ button:hover {
   color: #4d4d4d;
   margin: 1px 0;
   font-weight: 600;
+}
+
+.card p:hover {
+  font-size: 0.8rem;
+  color: #bd1111;
+  margin: 1px 0;
+  font-weight: 600;
+}
+
+.inner-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.inner-section-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
 }
 
 /* .card .content {

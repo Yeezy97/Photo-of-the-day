@@ -4,4 +4,6 @@ mixin card(post)
         img(src=post.image_url, alt=post.title)
         .content
             h6= post.title
-            p= post.description
+            .inner-section
+                img.inner-section-img(src=post.image_url, alt=post.title)
+                p= post.username

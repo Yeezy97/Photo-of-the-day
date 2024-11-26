@@ -1,0 +1,7 @@
+//- Card Mixin
+mixin card(post)
+    .card
+        img(src=post.image_url, alt=post.title)
+        .content
+            h6= post.title
+            p= post.description

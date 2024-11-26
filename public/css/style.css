@@ -3,6 +3,12 @@
   padding: 0px;
 }
 
+.main-section h3 {
+  padding-left: 2rem;
+  text-decoration: underline;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 /* navigation bar */
 
 .navbar {
@@ -289,11 +295,17 @@ button:hover {
   height: 40px;
 }
 
+/* home */
+
+.main-section {
+  padding: 1rem 1rem;
+}
+
 /* card */
 .cards {
   display: flex;
   flex-wrap: wrap;
-  justify-content: left;
+  justify-content: center;
   gap: 20px;
   padding: 20px;
 }
@@ -301,18 +313,101 @@ button:hover {
 .card {
   background-color: white;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 1.5rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 300px;
+  width: 260px;
+  height: 350px;
   overflow: hidden;
+  position: relative;
+  cursor: pointer;
 }
 
-.card img {
+.content {
+  position: absolute;
+  bottom: -4.2rem;
+  left: 0rem;
   width: 100%;
-  height: auto;
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.3rem 0.3rem 0rem 0rem;
+  /* display: none; */
+  background-color: rgb(255, 255, 255);
+
+  transition: transform 900ms ease-in-out;
 }
 
-.card .content {
+.card:hover .content {
+  /* background-color: rgb(255, 255, 255); */
+  /* display: block; */
+  transform: translateY(-4.2rem);
+}
+
+.favourite-button {
+  display: none;
+}
+
+.card:hover .favourite-button {
+  display: block;
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+}
+
+.favourite-button svg {
+  stroke: #f62929;
+}
+
+.favourite-button:hover svg {
+  fill: #f62929;
+}
+
+.like-button {
+  margin-left: auto;
+  margin-right: 1.4rem;
+}
+
+.like-button:hover svg {
+  fill: #005cd4;
+}
+
+.card > img {
+  width: 100%;
+  height: 100%;
+}
+
+.card h6 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 800;
+}
+
+.card p {
+  font-size: 0.9rem;
+  color: #4d4d4d;
+  margin: 1px 0;
+  font-weight: 600;
+}
+
+.card p:hover {
+  color: rgb(236, 54, 54);
+
+  margin: 1px 0;
+  font-weight: 600;
+}
+
+.inner-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.inner-section-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+/* .card .content {
   padding: 15px;
 }
 
@@ -326,10 +421,19 @@ button:hover {
   font-size: 1rem;
   color: #666;
   margin: 10px 0 0;
-}
+} */
 
-/* Media Query */
+/* --------  Media Query -------- */
 
+/* @media (max-width: 800px) {
+  .hideOnMobile {
+    display: none;
+  }
+  .mobile-menu-icon {
+    display: block;
+    cursor: pointer;
+  }
+} */
 @media (max-width: 800px) {
   .hideOnMobile {
     display: none;
@@ -338,8 +442,7 @@ button:hover {
     display: block;
     cursor: pointer;
   }
-}
-@media (max-width: 800px) {
+
   .sidenav {
     background-color: rgb(237, 237, 237, 0.9);
     backdrop-filter: blur(50px);
@@ -414,6 +517,15 @@ button:hover {
     font-size: 1rem;
   }
 }
+
+@media (max-width: 590px) {
+  /* image card (home page)  */
+  .card {
+    width: 45%;
+    height: 350px;
+  }
+}
+
 @media (max-width: 400px) {
   /* about page  */
   .about-text {

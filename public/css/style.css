@@ -370,14 +370,13 @@ button:hover {
 }
 
 .card p {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: #4d4d4d;
   margin: 1px 0;
   font-weight: 600;
 }
 
 .card p:hover {
-  font-size: 0.8rem;
   color: rgb(236, 54, 54);
 
   margin: 1px 0;

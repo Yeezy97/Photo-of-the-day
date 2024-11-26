@@ -41,7 +41,7 @@ app.get("/home", function (req, res) {
   //     image: "/images/post2.jpg",
   //   },
   // ];
-  sql = "select * from posts";
+  sql = "select * from post";
   db.query(sql).then((results) => {
     console.log(results);
     res.render("home", { posts: results });
@@ -73,7 +73,7 @@ app.get("/post", function (req, res) {
   //   },
   // ];
 
-  sql = "select * from posts";
+  sql = "select * from post";
   db.query(sql).then((results) => {
     console.log(results);
   });

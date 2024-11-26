@@ -1,4 +1,6 @@
 extends ../templates/layout
+include ../components/mixins.pug
+
 
 block main 
   main
@@ -6,10 +8,6 @@ block main
         if posts && posts.length
             .cards
                 each post in posts
-                    .card
-                        img(src=post.imageurl, alt=post.title)
-                        .content
-                            h2= post.title
-                            p= post.description
+                    +card({image_url: post.image_url, title: post.title, description: post.description})
         else
             p No posts available

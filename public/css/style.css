@@ -312,7 +312,7 @@ button:hover {
 
 .content {
   position: absolute;
-  bottom: -3rem;
+  bottom: -3.8rem;
   left: 0rem;
   width: 100%;
   padding: 0.3rem 0.8rem;
@@ -320,13 +320,13 @@ button:hover {
   /* display: none; */
   background-color: rgb(255, 255, 255);
 
-  transition: transform 800ms ease-in-out;
+  transition: transform 900ms ease-in-out;
 }
 
 .card:hover .content {
   /* background-color: rgb(255, 255, 255); */
   /* display: block; */
-  transform: translateY(-3rem);
+  transform: translateY(-3.8rem);
 }
 
 .card > img {
@@ -350,7 +350,8 @@ button:hover {
 
 .card p:hover {
   font-size: 0.8rem;
-  color: #bd1111;
+  color: rgb(236, 54, 54);
+
   margin: 1px 0;
   font-weight: 600;
 }

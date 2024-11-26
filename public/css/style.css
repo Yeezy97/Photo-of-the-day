@@ -348,6 +348,15 @@ button:hover {
   fill: #f62929;
 }
 
+.like-button {
+  margin-left: auto;
+  margin-right: 1.4rem;
+}
+
+.like-button:hover svg {
+  fill: #005cd4;
+}
+
 .card > img {
   width: 100%;
   height: 100%;

@@ -4,7 +4,8 @@ include ../components/mixins.pug
 
 block main 
   main
-    h1 Posts
+    .main-section
+        h3 All
         if posts && posts.length
             .cards
                 each post in posts

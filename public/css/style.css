@@ -3,6 +3,12 @@
   padding: 0px;
 }
 
+.main-section h3 {
+  padding-left: 2rem;
+  text-decoration: underline;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 /* navigation bar */
 
 .navbar {
@@ -289,11 +295,17 @@ button:hover {
   height: 40px;
 }
 
+/* home */
+
+.main-section {
+  padding: 1rem 1rem;
+}
+
 /* card */
 .cards {
   display: flex;
   flex-wrap: wrap;
-  justify-content: left;
+  justify-content: center;
   gap: 20px;
   padding: 20px;
 }

@@ -9,6 +9,6 @@ block main
         if posts && posts.length
             .cards
                 each post in posts
-                    +card({image_url: post.image_url, title: post.title, username: post.username})
+                    +card({image_url: post.image_url, title: post.title, username: post.username, profile_pic_url: post.profile_pic_url})
         else
             p No posts available

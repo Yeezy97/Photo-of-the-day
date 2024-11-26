@@ -312,7 +312,7 @@ button:hover {
 
 .content {
   position: absolute;
-  bottom: -3.8rem;
+  bottom: -4.2rem;
   left: 0rem;
   width: 100%;
   padding: 0.3rem 0.8rem;
@@ -326,7 +326,7 @@ button:hover {
 .card:hover .content {
   /* background-color: rgb(255, 255, 255); */
   /* display: block; */
-  transform: translateY(-3.8rem);
+  transform: translateY(-4.2rem);
 }
 
 .favourite-button {

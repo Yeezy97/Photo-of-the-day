@@ -300,6 +300,58 @@ button:hover {
 .main-section {
   padding: 1rem 1rem;
 }
+/* Photo of the Day Section */
+.photo-of-the-day-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+}
+
+.photo-of-the-day-container .photo img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.photo-of-the-day-container .details {
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+  gap: 10px;
+  text-align: left;
+}
+
+.photo-of-the-day-container .avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+
+.photo-of-the-day-container .uploader-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-of-the-day-container .uploader-info h4 {
+  margin: 0;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.photo-of-the-day-container .uploader-info .photo-description {
+  margin: 5px 0 0;
+  font-size: 0.9em;
+  color: #555;
+}
 
 /* card */
 .cards {

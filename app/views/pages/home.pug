@@ -1,14 +1,25 @@
 extends ../templates/layout
 include ../components/mixins.pug
 
-
 block main 
   main
     .main-section
-        h3 All
-        if posts && posts.length
-            .cards
-                each post in posts
-                    +card({image_url: post.image_url, title: post.title, username: post.username, profile_pic_url: post.profile_pic_url})
-        else
-            p No posts available
+      // Photo of the day section
+      if photoOfTheDay
+        .photo-of-the-day-container 
+          .photo 
+            img(src="/" + photoOfTheDay.image_url, alt=photoOfTheDay.title)
+          .details 
+            h4 = photoOfTheDay.title
+            p.photo-description= photoOfTheDay.description 
+      else
+        p No photo-of-the-day available
+
+      // Gallery section
+      h3 Gallery
+      if posts && posts.length
+        .cards
+          each post in posts
+            +card({image_url: post.image_url, title: post.title, username: post.username, profile_pic_url: post.profile_pic_url})
+      else
+        p No posts available

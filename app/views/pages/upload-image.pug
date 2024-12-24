@@ -1,0 +1,23 @@
+extends layout
+
+block main
+  main.container
+    h1 Add Photo
+    form(action="/upload", method="post", enctype="multipart/form-data")
+      .input-group
+        
+        input(type="file", id="image", name="image", accept="image/*" required)
+
+      .input-group
+        
+        input(type="text", id="title", name="title", placeholder="image title" required)
+
+      .input-group
+         
+         input(type="text", id="location", name="location", placeholder="Location" required)
+
+      .input-group
+        
+       textarea(id="description", name="description", rows="4", placeholder="Describe photo")
+
+      button(type="submit") Upload photo 

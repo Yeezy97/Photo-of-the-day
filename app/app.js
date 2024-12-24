@@ -48,6 +48,35 @@ app.get("/signup", function (req, res) {
   res.render("signup");
 });
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+const upload = multer({ storage });
+
+// Routes
+app.get("/upload", (req, res) => {
+  res.render("upload");
+});
+
+app.post("/upload", upload.single("image"), (req, res) => {
+  const { title, description, location } = req.body;
+  const imagePath = `/uploads/${req.file.filename}`;
+
+  console.log("Uploaded Image Details:");
+  console.log({ title, description, location, imagePath });
+
+  res.send(`<h1>Image Uploaded Successfully!</h1>
+            <p>Title: ${title}</p>
+            <p>Description: ${description}</p>
+            <p>Location: ${location}</p>
+            <img src="${imagePath}" alt="${title}" style="max-width: 100%;">`);
+});
+
 // Start server on port 3000
 app.listen(3000, function () {
   console.log(`Server running at http://127.0.0.1:3000/`);

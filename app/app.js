@@ -2,9 +2,16 @@
 const express = require("express");
 const path = require("path");
 const multer = require("multer");
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} = require("@aws-sdk/client-s3");
 const dotenv = require("dotenv");
 const crypto = require("crypto");
+
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 dotenv.config();
 // Create express app
@@ -42,14 +49,25 @@ console.log(app.get("views"), "----------------loggg");
 // Get the functions in the db.js file to use
 const db = require("./services/db");
 
-app.get("/", function (req, res) {
+app.get("/", async function (req, res) {
   // sql = "select * from post";
   sql =
     "SELECT Post.post_id,Post.title,Post.image_url,Post.description,Post.location,Post.created_at AS post_created_at,User.user_id, User.username, User.email, User.profile_pic_url, User.gender, User.first_name, User.last_name, User.dob, User.age,User.created_at AS user_created_at FROM Post JOIN User ON Post.user_id = User.user_id";
-  db.query(sql).then((results) => {
+  db.query(sql).then(async (results) => {
     // console.log(results);
+    for (let p of results) {
+      let getObjParams = {
+        Bucket: bucketName,
+        Key: p.image_url,
+      };
+      let command = new GetObjectCommand(getObjParams);
+      let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      p.imageURL = url;
+    }
+    console.log(results);
     res.render("home", { posts: results });
   });
+
   // res.render("home", { posts });
 });
 
@@ -61,24 +79,57 @@ app.get("/login", function (req, res) {
   res.render("login");
 });
 
-app.post("/create-post", upload.single("image"), async function (req, res) {
-  console.log(req.body);
-  console.log(req.file);
-  console.log(req.file.buffer);
+app.post(
+  "/dashboard/create-post",
+  upload.single("image"),
+  async function (req, res) {
+    console.log(req.body);
+    console.log(req.file);
+    console.log(req.file.buffer);
 
-  const params = {
-    Bucket: bucketName,
-    Key: randomImageName(),
-    Body: req.file.buffer,
-    ContentType: req.file.mimetype,
-  };
+    console.log(req.body);
 
-  const command = new PutObjectCommand(params);
+    const imageKey = randomImageName();
+    const params = {
+      Bucket: bucketName,
+      Key: imageKey,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    };
 
-  await s3.send(command);
+    // save image to s3 bucket
+    const command = new PutObjectCommand(params);
+    await s3.send(command);
 
-  // res.render("posts", { posts });
-});
+    // var sql =
+    //   "INSERT INTO Post (post_id user_id, title, location, description, image_url ) VALUES (?, ? , ? , ? ,? , ?)";
+    // const result = await db.query(sql, [
+    //   11,
+    //   1,
+    //   req.body.title,
+    //   req.body.location,
+    //   req.body.description,
+    //   imageKey,
+    // ]);
+
+    var sql =
+      "INSERT INTO Post (post_id, user_id, title, description, location, image_url ) VALUES (?,?,?,?,?,?)";
+    const result = await db.query(sql, [
+      15,
+      2,
+      req.body.title,
+      req.body.description,
+      req.body.location,
+      imageKey,
+    ]);
+
+    res.render("upload-image");
+
+    // res.send({ sometext: "done" });
+
+    // res.render("posts", { posts });
+  }
+);
 
 app.get("/post", function (req, res) {
   sql = "select * from post";
@@ -93,6 +144,10 @@ app.get("/signup", function (req, res) {
 });
 
 app.get("/dashboard", function (req, res) {
+  res.render("dashboard");
+});
+
+app.get("/dashboard/create-post", function (req, res) {
   res.render("upload-image");
 });
 

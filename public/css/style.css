@@ -407,6 +407,93 @@ button:hover {
   border-radius: 50%;
 }
 
+/* Dashboard Home Layout */
+
+.main-dashboard {
+  /* background-color: red; */
+  display: flex;
+  height: calc(100vh - 4.5rem);
+}
+.profile-section {
+  height: 12rem;
+  background-color: #333;
+  margin-bottom: 0.2rem;
+}
+
+.section-menu {
+  width: 20rem;
+  height: 100%;
+  background-color: #cecbc8;
+}
+
+.menu-button:first-child {
+  margin-top: 1rem;
+}
+
+.menu-button {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  cursor: pointer;
+  /* padding: 1rem; */
+  /* height: 2rem; */
+  background-color: #f31839;
+  color: whitesmoke;
+  /* font-weight: 600; */
+  /* width: 100%; */
+  margin: 0px;
+  border: 1px solid #d8d8ff;
+  overflow: hidden;
+}
+
+.menu-button a {
+  padding: 1.2rem 1rem;
+  display: inline-block;
+  text-decoration: none;
+  height: 100%;
+  width: 100%;
+  /* background-color: #1e1ef8; */
+  /* margin: 1rem 0; */
+  overflow: hidden;
+  color: whitesmoke;
+}
+
+.menu-button a:focus {
+  color: whitesmoke;
+}
+
+.menu-button a:active {
+  color: whitesmoke;
+}
+
+.menu-button:hover {
+  background-color: #ff183b;
+  border: 2px solid black;
+}
+
+.section-main {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dashboard-modal {
+  background: rgba(255, 196, 196, 0.909);
+  height: fit-content;
+  border-radius: 1.8rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 35rem;
+  padding: 3rem;
+  text-align: center;
+  border: rgb(236, 54, 54) 2px solid;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  backdrop-filter: blur(23px);
+}
+
+.dashboard-modal-content h2 {
+  margin-bottom: 1.5rem;
+}
 /* .card .content {
   padding: 15px;
 }

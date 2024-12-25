@@ -1,0 +1,31 @@
+extends ../templates/dashboard-layout
+
+block main
+  .main-dashboard
+      .section-menu
+        .profile-section 
+           user info
+        .menu-button 
+          a(href="/dashboard") Dashboard
+        .menu-button 
+          a(href="/dashboard/create-post") Create Post
+        .menu-button 
+          a Signout
+      .section-main  
+          .dashboard-modal
+              .dashboard-modal-content
+                  h2 Create Post
+                  form(action='/dashboard/create-post', method='post' enctype='multipart/form-data')
+                      .input-group
+                        label(for='title') Title
+                        input(type='text', id='title', name='title', required)
+                      .input-group
+                        label(for='location') Location
+                        input(type='text', id='location', name='location', )
+                      .input-group
+                        label(for='description') Description
+                        textarea(id='description', name='description', cols='53', rows='5') 
+                      .input-group
+                        label(for='image') Image
+                        input(type='file', id='image', name='image', accept='image/*', required)
+                      button.submit-button(type='submit') Create Post

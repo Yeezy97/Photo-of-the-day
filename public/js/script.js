@@ -12,6 +12,27 @@ nav_menu_open.addEventListener("click", () => {
 nav_burger_close.addEventListener("click", () => {
   sidenav.classList.toggle("active");
 });
+// Ensure buttons show correct "liked" state on page load
+document.addEventListener("DOMContentLoaded", () => {
+  likeButtons.forEach((button) => {
+    const postId = button.dataset.postId;
+
+    // Fetch the current like state for this post
+    fetch(`/like/status/${postId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.liked) {
+          button.classList.add("liked"); // Mark button as liked if it's already liked
+        }
+      })
+      .catch((error) => console.error("Error fetching like status:", error));
+  });
+});
 
 // Handle like button click
 likeButtons.forEach((button) => {

@@ -3,6 +3,7 @@
 const nav_menu_open = document.querySelector(".mobile-menu-icon");
 const nav_burger_close = document.querySelector(".mobile-menu-close");
 const sidenav = document.querySelector(".sidenav");
+// const category_grid_item = document.querySelector(".login-logo");
 
 nav_menu_open.addEventListener("click", () => {
   sidenav.classList.toggle("active");
@@ -12,3 +13,17 @@ nav_menu_open.addEventListener("click", () => {
 nav_burger_close.addEventListener("click", () => {
   sidenav.classList.toggle("active");
 });
+
+// category_grid_item.forEach((item) => {
+//   item.addEventListener("click", function () {
+//     console.log(this);
+//     console.log(this.innerText);
+//   });
+// });
+
+// category_grid_item.addEventListener("click", function () {
+//   console.log(this);
+//   console.log(this.innerText);
+// });
+
+// console.log(category_grid_item);

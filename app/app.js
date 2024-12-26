@@ -143,6 +143,10 @@ app.get("/signup", function (req, res) {
   res.render("signup");
 });
 
+app.get("/category", function (req, res) {
+  res.render("category");
+});
+
 app.get("/dashboard", function (req, res) {
   res.render("dashboard");
 });

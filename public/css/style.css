@@ -365,6 +365,13 @@ button:hover {
   margin-right: 1.4rem;
 }
 
+/*button sould stay liked*/
+.like-button.liked {
+  background-color: #005cd4; /* Blue for liked */
+  color: #fff;
+  border-color: #005cd4;
+}
+
 .like-button:hover svg {
   fill: #005cd4;
 }

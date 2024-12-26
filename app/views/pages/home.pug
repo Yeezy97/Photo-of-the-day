@@ -1,14 +1,21 @@
 extends ../templates/layout
 include ../components/mixins.pug
 
-
 block main 
   main
     .main-section
-        h3 All
-        if posts && posts.length
-            .cards
-                each post in posts
-                    +card({image_url: post.image_url, title: post.title, username: post.username, profile_pic_url: post.profile_pic_url})
-        else
-            p No posts available
+      h3 All
+      if posts && posts.length
+        .cards
+          each post in posts
+            .card
+              img(src=post.image_url)
+              .content
+                h6= post.title
+                .inner-section
+                  img.inner-section-img(src=post.profile_pic_url, alt="Profile")
+                  p= post.username
+                button.like-button(class=post.is_liked ? 'liked' : '', data-post-id=post.post_id)
+                  span Like
+      else
+        p No posts available

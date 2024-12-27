@@ -5,7 +5,7 @@ include ../components/mixins.pug
 block main 
   main
     .main-section
-        h3.categorized-title= title
+        h3.categorized-title #{category_title}
         if posts && posts.length
             .cards
                 each post in posts

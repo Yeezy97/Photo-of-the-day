@@ -7,6 +7,7 @@
   padding-left: 2rem;
   text-decoration: underline;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 400;
 }
 
 /* navigation bar */
@@ -598,7 +599,7 @@ button:hover {
 }
 
 .categorized-title {
-  text-transform: capitalize;
+  text-transform: uppercase;
 }
 
 /* .card .content {

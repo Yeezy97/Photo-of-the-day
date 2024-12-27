@@ -45,6 +45,10 @@ app.set("views", path.join(__dirname, "./views/pages"));
 const randomImageName = (bytes = 32) =>
   crypto.randomBytes(bytes).toString("hex");
 
+function generateLongRandomNumberArray(length) {
+  return Array.from({ length }, () => Math.floor(Math.random() * 10)).join("");
+}
+
 console.log(app.get("views"), "----------------loggg");
 // Get the functions in the db.js file to use
 const db = require("./services/db");
@@ -76,6 +80,9 @@ app.get("/about", function (req, res) {
 
 app.get("/login", function (req, res) {
   res.render("login");
+});
+app.get("/dashboard/create-post", function (req, res) {
+  res.render("upload-image");
 });
 
 app.post(
@@ -111,10 +118,11 @@ app.post(
     //   imageKey,
     // ]);
 
+    const longRandomNumberArray = generateLongRandomNumberArray(5);
     var sql =
       "INSERT INTO Post (post_id, user_id, title, description, location, image_url ) VALUES (?,?,?,?,?,?)";
     const result = await db.query(sql, [
-      15,
+      18,
       2,
       req.body.title,
       req.body.description,
@@ -149,6 +157,11 @@ app.get("/category", function (req, res) {
 app.get("/category/:id", function (req, res) {
   console.log(req.params.id);
   let category_name = req.params.id;
+  let dateinfo = new Date();
+  let monthName = dateinfo.toLocaleString("default", { month: "long" });
+  let date = dateinfo.getDate();
+  let year = dateinfo.getFullYear();
+  // console.log(date, monthName, year);
 
   sql = `SELECT 
     Post.post_id,
@@ -188,8 +201,15 @@ WHERE
       let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
       p.imageURL = url;
     }
+
+    // set todays date
+    if (category_name === "today")
+      category_name += ` - ${date}, ${monthName} ${year}`;
     // console.log(results);
-    res.render("categorized-page", { posts: results, title: category_name });
+    res.render("categorized-page", {
+      posts: results,
+      category_title: category_name,
+    });
   });
 
   // res.render(".categorized-page");
@@ -197,10 +217,6 @@ WHERE
 
 app.get("/dashboard", function (req, res) {
   res.render("dashboard");
-});
-
-app.get("/dashboard/create-post", function (req, res) {
-  res.render("upload-image");
 });
 
 // ------------------ upload image --------------------

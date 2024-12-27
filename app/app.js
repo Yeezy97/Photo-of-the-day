@@ -50,7 +50,6 @@ console.log(app.get("views"), "----------------loggg");
 const db = require("./services/db");
 
 app.get("/", async function (req, res) {
-  // sql = "select * from post";
   sql =
     "SELECT Post.post_id,Post.title,Post.image_url,Post.description,Post.location,Post.created_at AS post_created_at,User.user_id, User.username, User.email, User.profile_pic_url, User.gender, User.first_name, User.last_name, User.dob, User.age,User.created_at AS user_created_at FROM Post JOIN User ON Post.user_id = User.user_id";
   db.query(sql).then(async (results) => {
@@ -64,7 +63,7 @@ app.get("/", async function (req, res) {
       let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
       p.imageURL = url;
     }
-    console.log(results);
+    // console.log(results);
     res.render("home", { posts: results });
   });
 
@@ -145,6 +144,55 @@ app.get("/signup", function (req, res) {
 
 app.get("/category", function (req, res) {
   res.render("category");
+});
+
+app.get("/category/:id", function (req, res) {
+  console.log(req.params.id);
+  let category_name = req.params.id;
+
+  sql = `SELECT 
+    Post.post_id,
+    Post.title,
+    Post.image_url,
+    Post.description,
+    Post.location,
+    Post.created_at AS post_created_at,
+    User.user_id, 
+    User.username, 
+    User.email, 
+    User.profile_pic_url, 
+    User.gender, 
+    User.first_name, 
+    User.last_name, 
+    User.dob, 
+    User.age,
+    User.created_at AS user_created_at 
+FROM 
+    Post 
+JOIN 
+    User ON Post.user_id = User.user_id
+JOIN 
+    Post_Category ON Post.post_id = Post_Category.post_id
+JOIN 
+    Category ON Post_Category.category_id = Category.category_id 
+WHERE 
+    Category.category_name = ?`;
+  db.query(sql, [category_name]).then(async (results) => {
+    // console.log(results);
+    for (let p of results) {
+      let getObjParams = {
+        Bucket: bucketName,
+        Key: p.image_url,
+      };
+      let command = new GetObjectCommand(getObjParams);
+      let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      p.imageURL = url;
+    }
+    // console.log(results);
+    res.render("categorized-page", { posts: results, title: category_name });
+  });
+
+  // res.render(".categorized-page");
 });
 
 app.get("/dashboard", function (req, res) {

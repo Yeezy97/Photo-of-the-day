@@ -9,4 +9,4 @@ dashboard_menu.forEach((item) => {
   });
 });
 
-// console.log(dashboard_menu);
+console.log(dashboard_menu);

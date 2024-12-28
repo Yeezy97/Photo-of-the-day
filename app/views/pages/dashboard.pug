@@ -2,14 +2,6 @@ extends ../templates/dashboard-layout
 
 block main
   .main-dashboard
-      .section-menu
-        .profile-section 
-           user info
-        .menu-button 
-          a(href="/dashboard") Dashboard
-        .menu-button 
-          a(href="/dashboard/create-post") Create Post
-        .menu-button 
-          a Signout
-      .section-main  
-          h2 This is the Dashboard
+    include ../components/sidenav
+    .section-main  
+        h2 This is the Dashboard

@@ -475,6 +475,7 @@ button:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: auto;
 }
 
 .dashboard-modal {
@@ -490,6 +491,7 @@ button:hover {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
     rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
   backdrop-filter: blur(23px);
+  margin-top: 6rem;
 }
 
 .dashboard-modal-content h2 {
@@ -600,6 +602,22 @@ button:hover {
 
 .categorized-title {
   text-transform: uppercase;
+}
+
+/* Create Post Drop down */
+.category-dropdown-main {
+  display: flex;
+  justify-content: center;
+  justify-content: space-evenly;
+}
+
+#dropdown {
+  padding: 0.7rem;
+  width: 11rem;
+}
+
+#inputField {
+  width: 9rem;
 }
 
 /* .card .content {

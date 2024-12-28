@@ -10,3 +10,13 @@ dashboard_menu.forEach((item) => {
 });
 
 console.log(dashboard_menu);
+
+// create-post dropdown menu function
+document.addEventListener("DOMContentLoaded", function () {
+  const dropdown = document.getElementById("dropdown");
+  const inputField = document.getElementById("inputField");
+
+  dropdown.addEventListener("change", function () {
+    inputField.value = dropdown.value;
+  });
+});

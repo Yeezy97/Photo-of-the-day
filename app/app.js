@@ -81,8 +81,13 @@ app.get("/about", function (req, res) {
 app.get("/login", function (req, res) {
   res.render("login");
 });
-app.get("/dashboard/create-post", function (req, res) {
-  res.render("upload-image");
+app.get("/dashboard/create-post", async function (req, res) {
+  var sql = `SELECT * 
+     FROM Category`;
+  const result = await db.query(sql);
+  console.log(result);
+
+  res.render("upload-image", { options: result });
 });
 
 app.post(
@@ -108,7 +113,7 @@ app.post(
     await s3.send(command);
 
     // var sql =
-    //   "INSERT INTO Post (post_id user_id, title, location, description, image_url ) VALUES (?, ? , ? , ? ,? , ?)";
+    //   "INSERT INTO Post (post_id ,user_id, title, location, description, image_url ) VALUES (?, ? , ? , ? ,? , ?)";
     // const result = await db.query(sql, [
     //   11,
     //   1,
@@ -119,18 +124,75 @@ app.post(
     // ]);
 
     const longRandomNumberArray = generateLongRandomNumberArray(5);
-    var sql =
-      "INSERT INTO Post (post_id, user_id, title, description, location, image_url ) VALUES (?,?,?,?,?,?)";
-    const result = await db.query(sql, [
-      18,
-      2,
-      req.body.title,
-      req.body.description,
-      req.body.location,
-      imageKey,
-    ]);
 
-    res.render("upload-image");
+    var sql = "SELECT * FROM CATEGORY WHERE category_name = ?";
+    const categoryResult = await db.query(sql, [req.body.category]);
+    console.log(categoryResult, "category result");
+
+    if (categoryResult.length > 0) {
+      var sql =
+        "INSERT INTO Post ( user_id, title, description, location, image_url ) VALUES (?,?,?,?,?)";
+      const result = await db.query(sql, [
+        2,
+        req.body.title,
+        req.body.description,
+        req.body.location,
+        imageKey,
+      ]);
+
+      console.log(
+        result.insertId,
+        categoryResult[0].category_id,
+        "------------"
+      );
+
+      var sql =
+        "INSERT INTO Post_Category ( post_id, category_id ) VALUES (?,?)";
+      const post_category_result = await db.query(sql, [
+        result.insertId,
+        categoryResult[0].category_id,
+      ]);
+
+      // console.log(result);
+    } else {
+      console.log("new category");
+      var sql = "INSERT INTO Category (category_name) VALUES (?)";
+      const category_result = await db.query(sql, [req.body.category]);
+
+      var sql =
+        "INSERT INTO Post ( user_id, title, description, location, image_url ) VALUES (?,?,?,?,?)";
+      const post_result = await db.query(sql, [
+        2,
+        req.body.title,
+        req.body.description,
+        req.body.location,
+        "imageKey",
+      ]);
+
+      var sql =
+        "INSERT INTO Post_Category ( post_id, category_id ) VALUES (?,?)";
+      const post_category_result = await db.query(sql, [
+        post_result.insertId,
+        category_result.insertId,
+      ]);
+    }
+
+    // var sql =
+    //   "INSERT INTO Post (post_id, user_id, title, description, location, image_url ) VALUES (?,?,?,?,?,?)";
+    // const result = await db.query(sql, [
+    //   2,
+    //   req.body.title,
+    //   req.body.description,
+    //   req.body.location,
+    //   imageKey,
+    // ]);
+
+    var sql = `SELECT * 
+    FROM Category`;
+    const result = await db.query(sql);
+    console.log(result);
+
+    res.render("upload-image", { options: result });
 
     // res.send({ sometext: "done" });
 

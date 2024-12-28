@@ -1,6 +1,7 @@
 // Import express.js
 const express = require("express");
 const path = require("path");
+const cron = require("node-cron");
 
 // Create express app
 const app = express();
@@ -14,27 +15,96 @@ console.log("Serving static files from:", path.join(__dirname, "public"));
 
 // Get the functions in the db.js file to use
 const db = require("./services/db");
+// Cron job to select Photo of the Day every hour
+cron.schedule("0 * * * *", async () => {
+  try {
+      await selectPhotoOfTheDay();
+  } catch (error) {
+      console.error("Error selecting Photo of the Day:", error);
+  }
+});
 
 // function to get Photo of the Day
-async function getPhotoOfTheDay() {
-  const now = new Date();
-  const last24Hours = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // Get the timestamp for 24 hours ago
+// async function getPhotoOfTheDay() {
+//   const now = new Date();
+//   const last2Minutes = new Date(now.getTime() - (2 * 60 * 1000)); // Get the timestamp for 2 minutes ago
 
-  // Convert both dates to ISO strings for easier comparison
-  const nowISOString = now.toISOString();
+//   // const last24Hours = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // Get the timestamp for 24 hours ago
+
+//   // Convert both dates to ISO strings for easier comparison
+//   const nowISOString = now.toISOString();
+//   const last2MinutesISOString = last2Minutes.toISOString();
+//   // const last24HoursISOString = last24Hours.toISOString();
+
+//   const photoQuery = `
+//     SELECT Post.image_url, Post.title, Post.description, COUNT(User_Likes_Post.post_id) AS like_count
+//     FROM Post
+//     JOIN User_Likes_Post ON Post.post_id = User_Likes_Post.post_id
+//     WHERE Post.created_at >= ?
+//     GROUP BY Post.post_id
+//     ORDER BY like_count DESC
+//     LIMIT 1
+//   `;
+
+//   const photoResults = await db.query(photoQuery, [last2MinutesISOString]);
+//   return photoResults.length > 0 ? photoResults[0] : null;
+// }
+
+// Function to select Photo of the Day
+async function selectPhotoOfTheDay() {
+  const now = new Date();
+  const last24Hours = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // 24 hours ago
   const last24HoursISOString = last24Hours.toISOString();
 
+  // Query to get the photo with the highest likes in the last 24 hours, excluding already selected posts
   const photoQuery = `
-    SELECT Post.image_url, Post.title, Post.description, COUNT(User_Likes_Post.post_id) AS like_count
-    FROM Post
-    JOIN User_Likes_Post ON Post.post_id = User_Likes_Post.post_id
-    WHERE User_Likes_Post.liked_at >= ?
-    GROUP BY Post.post_id
-    ORDER BY like_count DESC
-    LIMIT 1
+      SELECT Post.post_id, Post.image_url, Post.title, Post.description, COUNT(User_Likes_Post.post_id) AS like_count
+      FROM Post
+      LEFT JOIN User_Likes_Post ON Post.post_id = User_Likes_Post.post_id
+      WHERE Post.created_at >= ?
+        AND Post.selected_as_photo_of_the_day = FALSE
+      GROUP BY Post.post_id
+      ORDER BY like_count DESC
+      LIMIT 1
   `;
 
   const photoResults = await db.query(photoQuery, [last24HoursISOString]);
+
+  if (photoResults.length > 0) {
+      const topPhoto = photoResults[0];
+
+      // Mark the photo as selected in the Post table
+      const updateQuery = `
+          UPDATE Post
+          SET selected_as_photo_of_the_day = TRUE
+          WHERE post_id = ?
+      `;
+      await db.query(updateQuery, [topPhoto.post_id]);
+
+      // Persist the selected photo in the PhotoOfTheDay table
+      const insertQuery = `
+          INSERT INTO PhotoOfTheDay (post_id, title, image_url, description, like_count, selected_at)
+          VALUES (?, ?, ?, ?, ?, NOW())
+      `;
+      await db.query(insertQuery, [topPhoto.post_id, topPhoto.title, topPhoto.image_url, topPhoto.description, topPhoto.like_count]);
+
+      console.log(`Photo of the Day selected: ${topPhoto.title}`);
+      return topPhoto;
+  }
+
+  console.log("No Photo of the Day selected.");
+  return null;
+}
+
+async function getPhotoOfTheDay() {
+  // Query the PhotoOfTheDay table for the most recent selection
+  const query = `
+      SELECT * FROM PhotoOfTheDay
+      ORDER BY selected_at DESC
+      LIMIT 1
+  `;
+
+  const photoResults = await db.query(query);
   return photoResults.length > 0 ? photoResults[0] : null;
 }
 // Home Route

@@ -11,11 +11,23 @@ const {
 const dotenv = require("dotenv");
 const crypto = require("crypto");
 
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
+const { User } = require("./models/Users");
+
+const secretKey = "your-secret-key";
 dotenv.config();
 // Create express app
 var app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(express.json()); // json data to req.body
+app.use(bodyParser.json());
+app.use(cookieParser());
 
 // Add static files location
 app.use(express.static("public"));
@@ -53,6 +65,31 @@ console.log(app.get("views"), "----------------loggg");
 // Get the functions in the db.js file to use
 const db = require("./services/db");
 
+const authenticateToken = (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.redirect("/login"); // No token -> go to login
+  }
+
+  jwt.verify(token, secretKey, (err, user) => {
+    if (err) {
+      return res.redirect("/login"); // Invalid token -> go to login
+    }
+    req.user = user; // Attach user data to request
+    next();
+  });
+};
+
+const logout = (req, res) => {
+  // set a cookie name = jwt, payload = loggedout, exprity = 10sec
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 5 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: "success" });
+};
+
 app.get("/", async function (req, res) {
   sql =
     "SELECT Post.post_id,Post.title,Post.image_url,Post.description,Post.location,Post.created_at AS post_created_at,User.user_id, User.username, User.email, User.profile_pic_url, User.gender, User.first_name, User.last_name, User.dob, User.age,User.created_at AS user_created_at FROM Post JOIN User ON Post.user_id = User.user_id";
@@ -81,6 +118,84 @@ app.get("/about", function (req, res) {
 app.get("/login", function (req, res) {
   res.render("login");
 });
+
+// Check submitted email and password pair
+// app.post("/authenticate", async function (req, res) {
+//   params = req.body;
+//   var user = new User(params.email);
+//   try {
+//     uId = await user.getIdFromEmail();
+//     if (uId) {
+//       match = await user.authenticate(params.password);
+//       if (match) {
+//         req.session.uid = uId;
+//         req.session.loggedIn = true;
+//         console.log(req.session.id);
+//         res.redirect("/student-single/" + uId);
+//       } else {
+//         // TODO improve the user journey here
+//         res.send("invalid password");
+//       }
+//     } else {
+//       res.send("invalid email");
+//     }
+//   } catch (err) {
+//     console.error(`Error while comparing `, err.message);
+//   }
+// });
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  console.log(req.body, email, password);
+
+  // 1) Check if email and password exist
+  if (!email || !password) {
+    return res
+      .status(400)
+      .render("login", { error: "Please provide a email and password!" }); // render the same view with an error message
+  }
+
+  let user = new User(email);
+
+  let match = "";
+  try {
+    uId = await user.getIdFromEmail();
+    if (uId) {
+      // check password match
+      match = await user.authenticate(password);
+      if (match) {
+        const user = { email: email };
+        const token = jwt.sign(user, secretKey, { expiresIn: "1h" });
+
+        // Set the cookie with the token
+        res.cookie("token", token, { httpOnly: true });
+        res.redirect("/dashboard");
+      } else {
+        // TODO improve the user journey here
+        res.render("login", { error: "Invalid email or password" });
+      }
+    } else {
+      res.render("login", { error: "Invalid email or password" });
+    }
+  } catch (err) {
+    console.error(`Error while comparing `, err.message);
+  }
+});
+
+app.get("/dashboard", authenticateToken, (req, res) => {
+  res.render("dashboard", { user: req.user });
+});
+
+app.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.redirect("/login");
+});
+
+// app.get("/dashboard", function (req, res) {
+//   res.render("dashboard");
+// });
+
 app.get("/dashboard/create-post", async function (req, res) {
   var sql = `SELECT * 
      FROM Category`;
@@ -277,8 +392,29 @@ WHERE
   // res.render(".categorized-page");
 });
 
-app.get("/dashboard", function (req, res) {
-  res.render("dashboard");
+// Check submitted email and password pair
+app.post("/authenticate", async function (req, res) {
+  params = req.body;
+  var user = new User(params.email);
+  try {
+    uId = await user.getIdFromEmail();
+    if (uId) {
+      match = await user.authenticate(params.password);
+      if (match) {
+        req.session.uid = uId;
+        req.session.loggedIn = true;
+        console.log(req.session.id);
+        res.redirect("/student-single/" + uId);
+      } else {
+        // TODO improve the user journey here
+        res.send("invalid password");
+      }
+    } else {
+      res.send("invalid email");
+    }
+  } catch (err) {
+    console.error(`Error while comparing `, err.message);
+  }
 });
 
 // ------------------ upload image --------------------

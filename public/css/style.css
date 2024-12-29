@@ -620,6 +620,36 @@ button:hover {
   width: 9rem;
 }
 
+/* ----------------  sign up and login -------------- */
+.sign-up-name-group {
+  display: flex;
+  justify-content: center;
+  justify-content: space-evenly;
+}
+
+.sign-up-name-group input {
+  width: 80%;
+}
+
+.sign-up-name-group input {
+  width: 80%;
+}
+
+.input-group-gender {
+  display: flex;
+  justify-content: center;
+}
+
+.input-group-gender label {
+  padding-top: 0.4rem;
+  padding-right: 1rem;
+}
+
+.input-group-gender select {
+  padding: 0.5rem;
+  width: 20%;
+}
+
 /* .card .content {
   padding: 15px;
 }

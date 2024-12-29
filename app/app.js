@@ -327,6 +327,25 @@ app.get("/signup", function (req, res) {
   res.render("signup");
 });
 
+app.post("/signup", async function (req, res) {
+  console.log(req.body);
+  const { email, password, username, fname, lname, gender } = req.body;
+  let user = new User(req.body.email);
+  let userAddSuccess = await user.addUser(
+    email,
+    password,
+    username,
+    fname,
+    lname,
+    gender
+  );
+  if (userAddSuccess) {
+    res.redirect("/login");
+  } else {
+    res.render("signup", { message: "Something went wrong try again" });
+  }
+});
+
 app.get("/category", function (req, res) {
   res.render("category");
 });

@@ -25,6 +25,19 @@ class User {
     }
   }
 
+  async getUserDetails(email) {
+    var sql = "SELECT * FROM User WHERE email = ?";
+    const result = await db.query(sql, [email]);
+    let user = "";
+    // TODO LOTS OF ERROR CHECKS HERE..
+    if (JSON.stringify(result) != "[]") {
+      user = result[0];
+      return user;
+    } else {
+      return false;
+    }
+  }
+
   // Add a password to an existing user
   async setUserPassword(password) {
     const pw = await bcrypt.hash(password, 10);

@@ -1,11 +1,14 @@
 
 .section-menu
     .profile-section 
-        user info
+        img(src=`${user.profile_pic_url || '/image/profileImage.png' }` )
+        h3 #{user.username || 'Username!'}
     .menu-button 
         a(href="/dashboard") Dashboard
     .menu-button 
         a(href="/dashboard/create-post") Create Post
+    .menu-button 
+        a(href="/dashboard/profile") Profile        
     .menu-button 
         a(href="/dashboard/saved-photos") Favourites
     .menu-button 

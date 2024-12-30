@@ -419,6 +419,19 @@ button:hover {
   height: 12rem;
   background-color: #333;
   margin-bottom: 0.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-section img {
+  width: 5rem;
+  height: 5rem;
+}
+.profile-section h3 {
+  color: whitesmoke;
 }
 
 .section-menu {

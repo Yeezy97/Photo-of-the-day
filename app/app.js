@@ -76,6 +76,7 @@ const authenticateToken = (req, res, next) => {
     if (err) {
       return res.redirect("/login"); // Invalid token -> go to login
     }
+    // { email: 'john@example.com', iat: 1735531889, exp: 1735535489 }
     req.user = user; // Attach user data to request
     next();
   });
@@ -183,8 +184,16 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/dashboard", authenticateToken, (req, res) => {
-  res.render("dashboard", { user: req.user });
+app.get("/dashboard", authenticateToken, async (req, res) => {
+  let user = new User();
+  let userInfo = await user.getUserDetails(req.user.email);
+  console.log(userInfo);
+
+  if (userInfo) {
+    res.render("dashboard", { user: userInfo });
+  } else {
+    res.render("dashboard");
+  }
 });
 
 app.get("/logout", (req, res) => {

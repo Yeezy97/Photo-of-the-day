@@ -1,0 +1,39 @@
+extends ../templates/layout
+
+block main 
+    main
+        .category-body 
+            h1.category-heading Daily Inspiration
+        //- .category-section 
+            //- .category-item-1 
+            //-     img(src="/image/animalCategory.jpg")
+            //-     .category-text-section
+            //-         h3.category-title Animals 
+            //-         h2.category-description Explore Animals
+        .category-section 
+            div.grid-item
+                a(href="/category/food")
+                    img(src="/image/foodCategory.jpg", alt="Happy NYE wallpapers")
+                    .text-overlay
+                        h4 Food
+                        p Happy NYE wallpapers
+            div.grid-item
+                a(href="/category/decoration")
+                    img(src="/image/decorationCategory.jpg", alt="Dreamy window views")
+                    .text-overlay
+                        h4 Decoration
+                        p Dreamy window views
+            div.grid-item
+                a(href="/category/place")
+                    img(src="/image/placeCategory.jpg", alt="Boxing Day breakfast ideas")
+                    .text-overlay
+                        h4 Place
+                        p Boxing Day breakfast ideas
+            div.grid-item
+                a(href="/category/animal")
+                    img(src="/image/animalCategory.jpg", alt="Leftovers recipes")
+                    .text-overlay
+                        h4 Animal
+                        p Leftovers recipes you'll love
+
+        

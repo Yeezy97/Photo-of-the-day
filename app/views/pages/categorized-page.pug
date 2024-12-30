@@ -1,0 +1,14 @@
+extends ../templates/layout
+include ../components/mixins.pug
+
+
+block main 
+  main
+    .main-section
+        h3.categorized-title #{category_title}
+        if posts && posts.length
+            .cards
+                each post in posts
+                    +card({image_url: post.imageURL, title: post.title, username: post.username, profile_pic_url: post.profile_pic_url})
+        else
+            p No posts available

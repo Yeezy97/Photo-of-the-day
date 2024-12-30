@@ -5,9 +5,9 @@ nav.navbar
         img.logo-img(src='/image/logo.png' alt='website logo')
     .nav-list
       li
-        a.hideOnMobile(href='#') Today
+        a.hideOnMobile(href='/category/today') Today
       li
-        a.hideOnMobile(href='#') Explore
+        a.hideOnMobile(href='/category') Explore
   .brand-name
     a(href='/')
       span P
@@ -18,8 +18,9 @@ nav.navbar
     ul.nav-list
       li.hideOnMobile
         a(href='/about') About
-      a.login-button(href='/login') Login
-      a.signup-button.hideOnMobile(href='/signup') Signup
+      if !user
+        a.login-button(href='/login') Login
+        a.signup-button.hideOnMobile(href='/signup') Signup
       span.mobile-menu-icon
         svg(xmlns='http://www.w3.org/2000/svg' height='28' viewbox='0 96 960 960' width='28')
           path(d='M120 816v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z')
@@ -32,11 +33,13 @@ nav.navbar
       li
         a(href='/') Home
       li
-        a(href='#') Today
+        a(href='/category/today') Today
       li
-        a(href='#') Explore
+        a(href='/category') Explore
       li
         a(href='/about') About
-      li
-        a(href='/signup') Signup
-script(src='/js/script.js')
+      if !user
+        li
+          a(href='/login') login
+        li
+          a(href='/logout') Logout

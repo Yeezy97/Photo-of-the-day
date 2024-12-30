@@ -7,20 +7,31 @@ block main
         .backdrop
             .modal
                 .modal-content
-                img.login-logo(src='/image/logo.png' alt='website logo')
-                h2 Sign-Up to unlock features
-                form(action='/login', method='post')
-                    .input-group
-                        label(for='email') Email
-                        input(type='email', id='email', name='email', required)
-                    .input-group
-                        label(for='email') First Name
-                        input(type='email', id='email', name='email', required)
+                    img.login-logo(src='/image/logo.png' alt='website logo')
+                    h2 Sign-Up to unlock features
+                    form(action='/signup', method='post')
+                        .sign-up-name-group
+                            .input-group
+                                label(for='fname') First Name
+                                input(type='text', id='fname', name='fname', required)
+                            .input-group
+                                label(for='lname') Last Name
+                                input(type='text', id='lname', name='lname', required)
                         .input-group
-                        label(for='email') Last Name
-                        input(type='email', id='email', name='email', required)
+                            label(for='username') Username
+                            input(type='text', id='username', name='username', required)
                         .input-group
-                        label(for='email') Password
-                        input(type='email', id='email', name='email', required)                    
-                    
+                            label(for='email') Email
+                            input(type='email', id='email', name='email', required)
+                        .input-group
+                            label(for='password') Password
+                            input(type='password', id='password', name='password', required)
+                        .input-group-gender 
+                            <label for="gender">Gender:</label>
+                            <select id="gender" name="gender">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
                         button.submit-button(type='submit') Signup
+                        if message 
+                            #{message}

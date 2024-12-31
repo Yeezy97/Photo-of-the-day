@@ -76,8 +76,16 @@ const authenticateToken = (req, res, next) => {
     if (err) {
       return res.redirect("/login"); // Invalid token -> go to login
     }
-    // { email: 'john@example.com', iat: 1735531889, exp: 1735535489 }
+
+    //    user {
+    //   username: 'v1',
+    //   profile_pic: '/image/samImg.jpg',
+    //   iat: 1735589537,
+    //    exp: 1735593137
+    //  }
     req.user = user; // Attach user data to request
+    console.log(req.user, "from auth middleware");
+
     next();
   });
 };
@@ -157,16 +165,20 @@ app.post("/login", async (req, res) => {
       .render("login", { error: "Please provide a email and password!" }); // render the same view with an error message
   }
 
-  let user = new User(email);
+  let userModel = new User(email);
 
-  let match = "";
+  let userObj = {};
   try {
-    uId = await user.getIdFromEmail();
+    uId = await userModel.getIdFromEmail();
     if (uId) {
       // check password match
-      match = await user.authenticate(password);
-      if (match) {
-        const user = { email: email };
+      userObj = await userModel.authenticate(password);
+      if (userObj) {
+        const user = {
+          email: userObj.email,
+          username: userObj.username,
+          profile_pic: userObj.profile_pic,
+        };
         const token = jwt.sign(user, secretKey, { expiresIn: "1h" });
 
         // Set the cookie with the token
@@ -211,7 +223,7 @@ app.get("/dashboard/create-post", async function (req, res) {
   const result = await db.query(sql);
   console.log(result);
 
-  res.render("upload-image", { options: result });
+  res.render("upload-image", { options: result, user: {} });
 });
 
 app.post(
@@ -249,11 +261,14 @@ app.post(
 
     const longRandomNumberArray = generateLongRandomNumberArray(5);
 
+    // query all categories from db
     var sql = "SELECT * FROM CATEGORY WHERE category_name = ?";
     const categoryResult = await db.query(sql, [req.body.category]);
     console.log(categoryResult, "category result");
 
+    // if category already exist
     if (categoryResult.length > 0) {
+      // add post data in db
       var sql =
         "INSERT INTO Post ( user_id, title, description, location, image_url ) VALUES (?,?,?,?,?)";
       const result = await db.query(sql, [
@@ -270,6 +285,7 @@ app.post(
         "------------"
       );
 
+      // link post with category
       var sql =
         "INSERT INTO Post_Category ( post_id, category_id ) VALUES (?,?)";
       const post_category_result = await db.query(sql, [
@@ -277,12 +293,14 @@ app.post(
         categoryResult[0].category_id,
       ]);
 
-      // console.log(result);
+      // if it is a new category
     } else {
       console.log("new category");
+      // create new category
       var sql = "INSERT INTO Category (category_name) VALUES (?)";
       const category_result = await db.query(sql, [req.body.category]);
 
+      // add post data in db
       var sql =
         "INSERT INTO Post ( user_id, title, description, location, image_url ) VALUES (?,?,?,?,?)";
       const post_result = await db.query(sql, [
@@ -293,6 +311,7 @@ app.post(
         "imageKey",
       ]);
 
+      // link category
       var sql =
         "INSERT INTO Post_Category ( post_id, category_id ) VALUES (?,?)";
       const post_category_result = await db.query(sql, [
@@ -311,6 +330,7 @@ app.post(
     //   imageKey,
     // ]);
 
+    // query latest category list, and return in frontend
     var sql = `SELECT * 
     FROM Category`;
     const result = await db.query(sql);
@@ -324,11 +344,59 @@ app.post(
   }
 );
 
+app.get("/dashboard/profile", authenticateToken, (req, res) => {
+  res.render("profile", { user: req.user });
+});
+
+app.post(
+  "/dashboard/profile",
+  authenticateToken,
+  upload.single("image"),
+  async (req, res) => {
+    console.log(req.body);
+    console.log(req.file);
+    let user = new User(req.user.email);
+
+    const imageKey = randomImageName();
+    if (req.file) {
+      console.log("file exist");
+      const params = {
+        Bucket: bucketName,
+        Key: imageKey,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+      };
+
+      // save image to s3 bucket
+      // const command = new PutObjectCommand(params);
+      // await s3.send(command);
+    }
+
+    if (req.user.username !== req.body.username) {
+      let userUsernameupdated = await user.updateUserUsername(
+        req.user.email,
+        req.body.username
+      );
+    }
+
+    if (req.body.password !== "") {
+      let userPasswordupdated = await user.updateUserPassword(
+        req.user.email,
+        req.body.password
+      );
+    }
+
+    return res.status(200).json({ error: "Profile updated successfully" });
+
+    // res.render("profile", { user: req.user, error: "Updated" });
+  }
+);
+
 app.get("/post", function (req, res) {
-  sql = "select * from post";
-  db.query(sql).then((results) => {
-    console.log(results);
-  });
+  // sql = "select * from post";
+  // db.query(sql).then((results) => {
+  //   console.log(results);
+  // });
   // res.render("posts", { posts });
 });
 

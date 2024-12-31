@@ -429,6 +429,7 @@ button:hover {
 .profile-section img {
   width: 5rem;
   height: 5rem;
+  border-radius: 50%;
 }
 .profile-section h3 {
   color: whitesmoke;
@@ -509,6 +510,21 @@ button:hover {
 
 .dashboard-modal-content h2 {
   margin-bottom: 1.5rem;
+}
+
+.message-element {
+  margin-top: 1rem;
+  padding: 0.4rem 1rem;
+  color: whitesmoke;
+  background-color: rgb(232, 51, 81);
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 50%;
+  bottom: 1.5rem;
+  margin: auto;
+  border-radius: 0.5rem;
+  /* transition: bottom 2s ease; Added transition; */
 }
 
 /* ------------- Category ------------------- */

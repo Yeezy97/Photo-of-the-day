@@ -2,6 +2,13 @@
 
 const dashboard_menu = document.querySelectorAll(".menu-button");
 
+// dashboard profile page
+const profile_newpassword = document.querySelector(".newpassword");
+const profile_confirmpassword = document.querySelector(".confirmpassword");
+const profile_form = document.querySelector(".form-profile");
+const submit_button_profile = document.querySelector(".submit-button");
+const profile_error_message = document.querySelector(".error");
+
 dashboard_menu.forEach((item) => {
   item.addEventListener("click", function () {
     console.log(this);
@@ -19,4 +26,112 @@ document.addEventListener("DOMContentLoaded", function () {
   dropdown.addEventListener("change", function () {
     inputField.value = dropdown.value;
   });
+});
+
+submit_button_profile.addEventListener("click", async function (e) {
+  e.preventDefault();
+
+  let messageElement = document.createElement("p");
+  messageElement.classList.add("message-element");
+  if (
+    profile_newpassword.value === "" &&
+    profile_confirmpassword.value === ""
+  ) {
+    // if no password
+    const formData = new FormData(profile_form); // Get the form data
+
+    try {
+      const response = await fetch("/dashboard/profile", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        // window.location.href = "/dashboard/profile"; //if okay, redirect to the dashboard.
+        const successData = await response.json();
+        console.log("Profile updated successfully", successData);
+        if (successData) {
+          messageElement.textContent = successData.error;
+          submit_button_profile.after(messageElement);
+          setTimeout(() => {
+            messageElement.remove();
+          }, 4000);
+        }
+      } else {
+        const errorData = await response.json();
+        console.error("Error updating profile", errorData);
+        // const messageElement = document.createElement('p');
+        // messageElement.textContent = errorData.error;
+        // messageElement.style.position = 'absolute';
+        // messageElement.classList.add('message-element');
+        // form.after(messageElement)
+
+        //   setTimeout(() => {
+        //       messageElement.classList.add("active"); //trigger the transition
+        //         setTimeout(() => {
+        //             messageElement.remove(); // remove after transition
+        //     }, 500)
+        // }, 0)
+      }
+    } catch (error) {
+      console.error("Error during fetch operation", error);
+    }
+  } else if (
+    profile_newpassword.value !== "" ||
+    profile_confirmpassword.value !== ""
+  ) {
+    // if password doesnt match
+
+    if (profile_newpassword.value !== profile_confirmpassword.value) {
+      messageElement.textContent = "Password does not match!!";
+      submit_button_profile.after(messageElement);
+      setTimeout(() => {
+        messageElement.remove();
+      }, 4000);
+    } else {
+      // if all conditions matches then send data
+
+      const formData = new FormData(profile_form); // Get the form data
+
+      try {
+        const response = await fetch("/dashboard/profile", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (response.ok) {
+          // window.location.href = "/dashboard/profile"; //if okay, redirect to the dashboard.
+          const successData = await response.json();
+          console.log("Profile updated successfully", successData);
+          // profile_error_message.textContent = successData.error;
+          if (successData) {
+            messageElement.textContent = successData.error;
+            submit_button_profile.after(messageElement);
+            setTimeout(() => {
+              messageElement.remove();
+            }, 4000);
+          }
+          // const errorMessageContainer = document.querySelector(".dashboard-modal-content")
+          // errorMessageContainer.textContent = successData.message
+        } else {
+          const errorData = await response.json();
+          console.error("Error updating profile", errorData);
+          // const messageElement = document.createElement('p');
+          // messageElement.textContent = errorData.error;
+          // messageElement.style.position = 'absolute';
+          // messageElement.classList.add('message-element');
+          // form.after(messageElement)
+
+          //   setTimeout(() => {
+          //       messageElement.classList.add("active"); //trigger the transition
+          //         setTimeout(() => {
+          //             messageElement.remove(); // remove after transition
+          //     }, 500)
+          // }, 0)
+        }
+      } catch (error) {
+        console.error("Error during fetch operation", error);
+      }
+    }
+  }
 });

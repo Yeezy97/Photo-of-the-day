@@ -48,9 +48,10 @@ class User {
 
   // Add a new record to the users table
   async addUser(email, password, username, fname, lname, gender) {
+    let profile_pic_url = "/image/profileImage.png";
     // const pw = await bcrypt.hash(password, 10);
     var sql =
-      "INSERT INTO User (email, password,username, first_name, last_name, gender) VALUES (? , ?, ? ,? ,?,?)";
+      "INSERT INTO User (email, password,username, first_name, last_name, gender, profile_pic_url) VALUES (? , ?, ? ,? ,?,?, ?)";
     const result = await db.query(sql, [
       email,
       password,
@@ -58,9 +59,27 @@ class User {
       fname,
       lname,
       gender,
+      profile_pic_url,
     ]);
     console.log(result.insertId);
     this.id = result.insertId;
+    return true;
+  }
+
+  // Add a new record to the users table
+  async updateUserUsername(email, username) {
+    var sql = ` UPDATE user
+    SET username = ?
+    WHERE email = ?`;
+    const result = await db.query(sql, [username, email]);
+    return true;
+  }
+
+  async updateUserPassword(email, password) {
+    var sql = ` UPDATE user
+    SET password = ?
+    WHERE email = ?`;
+    const result = await db.query(sql, [password, email]);
     return true;
   }
 
@@ -69,13 +88,19 @@ class User {
     // Get the stored, hashed password for the user
     console.log("authenticate functions");
 
-    var sql = "SELECT password FROM User WHERE user_id = ?";
+    var sql =
+      "SELECT email,password,username,profile_pic_url FROM User WHERE user_id = ?";
     const result = await db.query(sql, [this.id]);
     //   const match = await bcrypt.compare(submitted, result[0].password);
     console.log(result, "from database");
 
-    if (result[0].password === password) {
-      return true;
+    if (result && result[0].password === password) {
+      let userObj = {
+        username: result[0].username,
+        email: result[0].email,
+        profile_pic: result[0].profile_pic_url,
+      };
+      return userObj;
     } else {
       return false;
     }

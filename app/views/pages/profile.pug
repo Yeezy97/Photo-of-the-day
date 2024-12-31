@@ -1,0 +1,27 @@
+extends ../templates/dashboard-layout
+
+block main
+    .main-dashboard
+        include ../components/sidenav
+        .section-main  
+            .dashboard-modal
+                .dashboard-modal-content
+                    img.login-logo(src='/image/logo.png' alt='website logo' )
+                    h2 Profile Details
+                    form.form-profile(action='/dashboard/profile', method='post', enctype='multipart/form-data')
+                        .input-group
+                            label(for='username') Username
+                            input(type='text', id='username', name='username' ,value=(user.username ? user.username: ''),  required)
+                        .input-group
+                            label(for='password') New Password
+                            input.newpassword(type='password', id='password', name='password')
+                        .input-group
+                            label(for='confirmpassword') Confirm Password
+                            input.confirmpassword(type='password', id='confirmpassword', name='confirmpassword')
+                        .input-group
+                            label(for='image') Change Profile Image
+                            input(type='file', id='image', name='image', accept='image/*')
+                            button.submit-button(type='click') Update Profile
+                        if error
+                            p.error 'asdfsdfasf'
+                            

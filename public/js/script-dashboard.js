@@ -9,6 +9,10 @@ const profile_form = document.querySelector(".form-profile");
 const submit_button_profile = document.querySelector(".submit-button");
 const profile_error_message = document.querySelector(".error");
 
+let html_element = document.getElementsByTagName("html");
+
+console.log(html_element);
+
 dashboard_menu.forEach((item) => {
   item.addEventListener("click", function () {
     console.log(this);
@@ -47,7 +51,11 @@ submit_button_profile.addEventListener("click", async function (e) {
       });
 
       if (response.ok) {
-        // window.location.href = "/dashboard/profile"; //if okay, redirect to the dashboard.
+        window.location.href = "/dashboard"; //if okay, redirect to the dashboard.
+        // const html = await response.text(); // Get the HTML as a string
+        // html_element.innerHTML = html;
+        // return;
+
         const successData = await response.json();
         console.log("Profile updated successfully", successData);
         if (successData) {
@@ -100,7 +108,11 @@ submit_button_profile.addEventListener("click", async function (e) {
         });
 
         if (response.ok) {
-          // window.location.href = "/dashboard/profile"; //if okay, redirect to the dashboard.
+          window.location.href = "/dashboard"; //if okay, redirect to the dashboard.
+
+          // const html = await response.text(); // Get the HTML as a string
+          // html_element.innerHTML = html;
+          // return;
           const successData = await response.json();
           console.log("Profile updated successfully", successData);
           // profile_error_message.textContent = successData.error;

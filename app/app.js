@@ -173,11 +173,19 @@ app.post("/login", async (req, res) => {
     if (uId) {
       // check password match
       userObj = await userModel.authenticate(password);
+
       if (userObj) {
+        let getObjParams = {
+          Bucket: bucketName,
+          Key: userObj.profile_pic,
+        };
+        let command = new GetObjectCommand(getObjParams);
+        let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
         const user = {
           email: userObj.email,
           username: userObj.username,
-          profile_pic: userObj.profile_pic,
+          profile_pic_url: url,
         };
         const token = jwt.sign(user, secretKey, { expiresIn: "1h" });
 
@@ -202,7 +210,20 @@ app.get("/dashboard", authenticateToken, async (req, res) => {
   console.log(userInfo);
 
   if (userInfo) {
-    res.render("dashboard", { user: userInfo });
+    let getObjParams = {
+      Bucket: bucketName,
+      Key: userInfo.profile_pic_url,
+    };
+    let command = new GetObjectCommand(getObjParams);
+    let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    const userdata = {
+      email: userInfo.email,
+      username: userInfo.username,
+      profile_pic_url: url,
+    };
+
+    res.render("dashboard", { user: userdata });
   } else {
     res.render("dashboard");
   }
@@ -217,18 +238,19 @@ app.get("/logout", (req, res) => {
 //   res.render("dashboard");
 // });
 
-app.get("/dashboard/create-post", async function (req, res) {
+app.get("/dashboard/create-post", authenticateToken, async function (req, res) {
   var sql = `SELECT * 
      FROM Category`;
   const result = await db.query(sql);
   console.log(result);
 
-  res.render("upload-image", { options: result, user: {} });
+  res.render("upload-image", { options: result, user: req.user });
 });
 
 app.post(
   "/dashboard/create-post",
   upload.single("image"),
+  authenticateToken,
   async function (req, res) {
     console.log(req.body);
     console.log(req.file);
@@ -336,7 +358,7 @@ app.post(
     const result = await db.query(sql);
     console.log(result);
 
-    res.render("upload-image", { options: result });
+    res.render("upload-image", { user: req.user, options: result });
 
     // res.send({ sometext: "done" });
 
@@ -368,8 +390,13 @@ app.post(
       };
 
       // save image to s3 bucket
-      // const command = new PutObjectCommand(params);
-      // await s3.send(command);
+      const command = new PutObjectCommand(params);
+      await s3.send(command);
+
+      let userProfilePicupdated = await user.updateUserProfilePic(
+        req.user.email,
+        imageKey
+      );
     }
 
     if (req.user.username !== req.body.username) {
@@ -386,7 +413,35 @@ app.post(
       );
     }
 
-    return res.status(200).json({ error: "Profile updated successfully" });
+    // create new token
+    let userModel = new User(req.user.email);
+
+    let userObj = {};
+    try {
+      userdetails = await userModel.getUserDetails(req.user.email);
+
+      let getObjParams = {
+        Bucket: bucketName,
+        Key: userdetails.profile_pic_url,
+      };
+      let command = new GetObjectCommand(getObjParams);
+      let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+      const user = {
+        email: userdetails.email,
+        username: userdetails.username,
+        profile_pic_url: url,
+      };
+      const token = jwt.sign(user, secretKey, { expiresIn: "1h" });
+
+      // Set the cookie with the token
+      res.cookie("token", token, { httpOnly: true });
+    } catch (err) {
+      console.error(`Error while comparing `, err.message);
+    }
+    res.render("profile", { user: req.user, error: "Updated" });
+
+    // return res.status(200).json({ error: "Profile updated successfully" });
 
     // res.render("profile", { user: req.user, error: "Updated" });
   }

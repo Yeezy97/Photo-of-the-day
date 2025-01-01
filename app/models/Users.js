@@ -83,6 +83,14 @@ class User {
     return true;
   }
 
+  async updateUserProfilePic(email, imageName) {
+    var sql = ` UPDATE user
+    SET profile_pic_url = ?
+    WHERE email = ?`;
+    const result = await db.query(sql, [imageName, email]);
+    return true;
+  }
+
   // Test a submitted password against a stored password
   async authenticate(password) {
     // Get the stored, hashed password for the user

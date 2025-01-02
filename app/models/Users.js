@@ -97,13 +97,14 @@ class User {
     console.log("authenticate functions");
 
     var sql =
-      "SELECT email,password,username,profile_pic_url FROM User WHERE user_id = ?";
+      "SELECT user_id,email,password,username,profile_pic_url FROM User WHERE user_id = ?";
     const result = await db.query(sql, [this.id]);
     //   const match = await bcrypt.compare(submitted, result[0].password);
     console.log(result, "from database");
 
     if (result && result[0].password === password) {
       let userObj = {
+        user_id: result[0].user_id,
         username: result[0].username,
         email: result[0].email,
         profile_pic: result[0].profile_pic_url,

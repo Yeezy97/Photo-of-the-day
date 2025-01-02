@@ -174,7 +174,9 @@ app.post("/login", async (req, res) => {
       // check password match
       userObj = await userModel.authenticate(password);
 
+      // if password matched
       if (userObj) {
+        // get profile pic and set to token
         let getObjParams = {
           Bucket: bucketName,
           Key: userObj.profile_pic,
@@ -183,6 +185,7 @@ app.post("/login", async (req, res) => {
         let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
         const user = {
+          userId: userObj.user_id,
           email: userObj.email,
           username: userObj.username,
           profile_pic_url: url,
@@ -190,7 +193,8 @@ app.post("/login", async (req, res) => {
         const token = jwt.sign(user, secretKey, { expiresIn: "1h" });
 
         // Set the cookie with the token
-        res.cookie("token", token, { httpOnly: true });
+        // res.cookie("token", token, { httpOnly: true });
+        res.cookie("token", token);
         res.redirect("/dashboard");
       } else {
         // TODO improve the user journey here
@@ -218,6 +222,7 @@ app.get("/dashboard", authenticateToken, async (req, res) => {
     let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
     const userdata = {
+      userId: userInfo.user_id,
       email: userInfo.email,
       username: userInfo.username,
       profile_pic_url: url,
@@ -366,6 +371,70 @@ app.post(
   }
 );
 
+app.get("/dashboard/favourite-post", authenticateToken, async (req, res) => {
+  console.log(req.user, "from favourite");
+  let userId = req.user.userId;
+  let sql = `Select * FROM user_favourites_post
+     JOIN post ON post.post_id = user_favourites_post.post_id
+      WHERE user_favourites_post.user_id = ? `;
+  db.query(sql, [userId]).then(async (results) => {
+    // console.log(results);
+    for (let p of results) {
+      let getObjParams = {
+        Bucket: bucketName,
+        Key: p.image_url,
+      };
+      let command = new GetObjectCommand(getObjParams);
+      let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      p.imageURL = url;
+    }
+    // console.log(results);
+    res.render("favourite", { user: req.user, posts: results });
+  });
+});
+
+app.post("/dashboard/favourite-post", async (req, res) => {
+  let token = req.cookies.token;
+  let userIdFvtPost = "";
+  jwt.verify(token, secretKey, (err, user) => {
+    if (err) {
+      return res.redirect("/login"); // Invalid token -> go to login
+    }
+
+    //    user {
+    //   username: 'v1',
+    //   profile_pic: '/image/samImg.jpg',
+    //   iat: 1735589537,
+    //    exp: 1735593137
+    //  }
+    req.user = user; // Attach user data to request
+    userIdFvtPost = req.user.userId;
+  });
+
+  console.log(req.user, "from fav post");
+  // console.log(req.cookies.token);
+  if (token) {
+    try {
+      var sql =
+        "INSERT INTO user_favourites_post ( user_id, post_id ) VALUES (?,?)";
+      const post_category_result = await db.query(sql, [
+        userIdFvtPost,
+        req.body.postId,
+      ]);
+
+      console.log(post_category_result[0]);
+
+      res.json({ message: "Data received successfully" });
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    res.json({ message: "User not logged in" });
+  }
+
+  // res.render("profile", { user: req.user });
+});
+
 app.get("/dashboard/profile", authenticateToken, (req, res) => {
   res.render("profile", { user: req.user });
 });
@@ -428,6 +497,7 @@ app.post(
       let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
       const user = {
+        userId: userdetails.user_id,
         email: userdetails.email,
         username: userdetails.username,
         profile_pic_url: url,
@@ -435,7 +505,8 @@ app.post(
       const token = jwt.sign(user, secretKey, { expiresIn: "1h" });
 
       // Set the cookie with the token
-      res.cookie("token", token, { httpOnly: true });
+      // res.cookie("token", token, { httpOnly: true });
+      res.cookie("token", token);
     } catch (err) {
       console.error(`Error while comparing `, err.message);
     }

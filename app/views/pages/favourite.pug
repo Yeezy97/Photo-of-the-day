@@ -1,11 +1,11 @@
-extends ../templates/layout
+extends ../templates/dashboard-layout
 include ../components/mixins.pug
 
-
-block main 
-  main
-    .main-section
-        h3 All
+block main
+  .main-dashboard
+    include ../components/sidenav
+    //- h2.favourite-head-text Favourites
+    .section-main  
         if posts && posts.length
             .cards
                 each post in posts

@@ -101,7 +101,7 @@ const logout = (req, res) => {
 
 app.get("/", async function (req, res) {
   sql =
-    "SELECT Post.post_id,Post.title,Post.image_url,Post.description,Post.location,Post.created_at AS post_created_at,User.user_id, User.username, User.email, User.profile_pic_url, User.gender, User.first_name, User.last_name, User.dob, User.age,User.created_at AS user_created_at FROM Post JOIN User ON Post.user_id = User.user_id";
+    "SELECT Post.post_id,Post.title,Post.image_url,Post.description,Post.location,Post.like_count,Post.created_at AS post_created_at,User.user_id, User.username, User.email, User.profile_pic_url, User.gender, User.first_name, User.last_name, User.dob, User.age,User.created_at AS user_created_at FROM Post JOIN User ON Post.user_id = User.user_id";
   db.query(sql).then(async (results) => {
     // console.log(results);
     for (let p of results) {
@@ -425,6 +425,69 @@ app.post("/dashboard/favourite-post", async (req, res) => {
       console.log(post_category_result[0]);
 
       res.json({ message: "Data received successfully" });
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    res.json({ message: "User not logged in" });
+  }
+
+  // res.render("profile", { user: req.user });
+});
+
+app.post("/dashboard/like-post", async (req, res) => {
+  let token = req.cookies.token;
+  let userIdFvtPost = "";
+  jwt.verify(token, secretKey, (err, user) => {
+    if (err) {
+      return res.redirect("/login"); // Invalid token -> go to login
+    }
+
+    //    user {
+    //   username: 'v1',
+    //   profile_pic: '/image/samImg.jpg',
+    //   iat: 1735589537,
+    //    exp: 1735593137
+    //  }
+    req.user = user; // Attach user data to request
+    userIdFvtPost = req.user.userId;
+  });
+
+  // console.log(req.cookies.token);
+  if (token) {
+    try {
+      let sql =
+        "INSERT IGNORE INTO user_likes_post ( user_id, post_id ) VALUES (?,?)";
+      const post_category_result = await db.query(sql, [
+        userIdFvtPost,
+        req.body.postId,
+      ]);
+
+      // if post already liked
+      if (post_category_result.affectedRows === 0) {
+        let sql =
+          "DELETE FROM user_likes_post WHERE user_id = ? AND post_id = ?";
+        const result = await db.query(sql, [userIdFvtPost, req.body.postId]);
+
+        let sqlPostLikeIncrement = `UPDATE post
+        SET like_count = like_count - ${1}
+        WHERE post_id = ?;`;
+        const post_like_increment = await db.query(sqlPostLikeIncrement, [
+          req.body.postId,
+        ]);
+
+        res.json({ message: "Data is already present", duplicate: true });
+      } else {
+        // if not liked before
+        let sqlPostLikeIncrement = `UPDATE post
+        SET like_count = like_count + ${1}
+        WHERE post_id = ?;`;
+        const post_like_increment = await db.query(sqlPostLikeIncrement, [
+          req.body.postId,
+        ]);
+
+        res.json({ message: "Data inserted successfully", duplicate: false });
+      }
     } catch (error) {
       console.log(error);
     }

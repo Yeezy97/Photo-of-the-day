@@ -14,6 +14,7 @@ const nav_burger_close = document.querySelector(".mobile-menu-close");
 const sidenav = document.querySelector(".sidenav");
 const category_grid_item = document.querySelectorAll(".grid-item");
 const favourite_button_element = document.querySelectorAll(".favourite-button");
+const like_button_element = document.querySelectorAll(".like-button");
 
 console.log(category_grid_item);
 
@@ -86,3 +87,59 @@ favourite_button_element.forEach((item) => {
 });
 
 // console.log("cookie", document.cookie);
+like_button_element.forEach((item) => {
+  item.addEventListener("click", async (e) => {
+    console.log(e);
+    console.log(e.target);
+    // if user is logged in
+    if (token) {
+      // const parent = e.target.parentElement;
+      const parentElement = e.target.closest(".card");
+
+      console.log("Parent Element:", parentElement);
+
+      console.log(parentElement.dataset);
+
+      const postId = parentElement.dataset.postId;
+      const userPostId = parentElement.dataset.userId;
+
+      console.log("Post ID:", postId);
+      console.log("User Who Uploaded, ID:", userPostId);
+
+      const svgPath = e.target
+        .closest(".like-button")
+        .querySelector("svg path");
+
+      // Toggle the fill color
+      if (svgPath) {
+        const currentFill = svgPath.getAttribute("fill");
+        svgPath.setAttribute("fill", currentFill === "blue" ? "none" : "blue"); // Toggle between red and default
+      }
+
+      try {
+        let response = await fetch("/dashboard/like-post", {
+          method: "POST", // Method is POST
+          headers: {
+            "Content-Type": "application/json", // Inform the server that the body is JSON
+          },
+          body: JSON.stringify({
+            postId: postId,
+          }), // Sending the userId and postId as JSON data
+        });
+
+        if (response.ok) {
+          const result = await response.json(); // Handle the response from the server
+          console.log(result); // Process the server's response
+        } else {
+          console.error("Error:", response.status); // Handle errors if the request fails
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      // user not logged in
+
+      console.log("not logged in");
+    }
+  });
+});

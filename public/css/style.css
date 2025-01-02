@@ -390,7 +390,7 @@ button:hover {
 }
 
 .card p:hover {
-  color: rgb(236, 54, 54);
+  color: rgb(219, 0, 58);
 
   margin: 1px 0;
   font-weight: 600;
@@ -400,12 +400,27 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  justify-content: space-between;
 }
 
 .inner-section-img {
   width: 30px;
   height: 30px;
   border-radius: 50%;
+}
+
+.title-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.like-button-section {
+  align-items: center;
+  gap: 0.2rem;
+
+  display: flex;
+  justify-items: center;
 }
 
 /* Dashboard Home Layout */

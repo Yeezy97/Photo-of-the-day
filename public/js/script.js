@@ -113,7 +113,10 @@ like_button_element.forEach((item) => {
       // Toggle the fill color
       if (svgPath) {
         const currentFill = svgPath.getAttribute("fill");
-        svgPath.setAttribute("fill", currentFill === "blue" ? "none" : "blue"); // Toggle between red and default
+        svgPath.setAttribute(
+          "fill",
+          currentFill === "#005cd4" ? "none" : "#005cd4"
+        ); // Toggle between red and default
       }
 
       try {

@@ -173,23 +173,38 @@ app.post("/login", async (req, res) => {
     if (uId) {
       // check password match
       userObj = await userModel.authenticate(password);
-
+      let user = {};
       // if password matched
       if (userObj) {
-        // get profile pic and set to token
-        let getObjParams = {
-          Bucket: bucketName,
-          Key: userObj.profile_pic,
-        };
-        let command = new GetObjectCommand(getObjParams);
-        let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+        if (userObj.profile_pic === "/image/profileImage.png") {
+          let url = "/image/profileImage.png";
+          console.log("profile pic match");
 
-        const user = {
-          userId: userObj.user_id,
-          email: userObj.email,
-          username: userObj.username,
-          profile_pic_url: url,
-        };
+          user = {
+            userId: userObj.user_id,
+            email: userObj.email,
+            username: userObj.username,
+            profile_pic_url: url,
+          };
+        } else {
+          console.log("profile pic notttttt match");
+
+          let getObjParams = {
+            Bucket: bucketName,
+            Key: userObj.profile_pic,
+          };
+          let command = new GetObjectCommand(getObjParams);
+          let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+          user = {
+            userId: userObj.user_id,
+            email: userObj.email,
+            username: userObj.username,
+            profile_pic_url: url,
+          };
+        }
+        // get profile pic and set to token
+
         const token = jwt.sign(user, secretKey, { expiresIn: "1h" });
 
         // Set the cookie with the token
@@ -209,29 +224,31 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/dashboard", authenticateToken, async (req, res) => {
-  let user = new User();
-  let userInfo = await user.getUserDetails(req.user.email);
-  console.log(userInfo);
+  // let user = new User();
+  // let userInfo = await user.getUserDetails(req.user.email);
+  // console.log(userInfo);
 
-  if (userInfo) {
-    let getObjParams = {
-      Bucket: bucketName,
-      Key: userInfo.profile_pic_url,
-    };
-    let command = new GetObjectCommand(getObjParams);
-    let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+  // if (userInfo) {
+  //   let getObjParams = {
+  //     Bucket: bucketName,
+  //     Key: userInfo.profile_pic_url,
+  //   };
+  //   let command = new GetObjectCommand(getObjParams);
+  //   let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
 
-    const userdata = {
-      userId: userInfo.user_id,
-      email: userInfo.email,
-      username: userInfo.username,
-      profile_pic_url: url,
-    };
+  //   const userdata = {
+  //     userId: userInfo.user_id,
+  //     email: userInfo.email,
+  //     username: userInfo.username,
+  //     profile_pic_url: url,
+  //   };
 
-    res.render("dashboard", { user: userdata });
-  } else {
-    res.render("dashboard");
-  }
+  //   res.render("dashboard", { user: req.user });
+  // } else {
+  //   res.render("dashboard");
+  // }
+
+  res.render("dashboard", { user: req.user });
 });
 
 app.get("/logout", (req, res) => {
@@ -456,6 +473,7 @@ app.post("/dashboard/like-post", async (req, res) => {
   // console.log(req.cookies.token);
   if (token) {
     try {
+      // IGNORE will not throw error, we can read response from daatabase
       let sql =
         "INSERT IGNORE INTO user_likes_post ( user_id, post_id ) VALUES (?,?)";
       const post_category_result = await db.query(sql, [
@@ -463,22 +481,45 @@ app.post("/dashboard/like-post", async (req, res) => {
         req.body.postId,
       ]);
 
+      console.log(post_category_result);
       // if post already liked
       if (post_category_result.affectedRows === 0) {
+        // remove like and user ids from table
         let sql =
           "DELETE FROM user_likes_post WHERE user_id = ? AND post_id = ?";
         const result = await db.query(sql, [userIdFvtPost, req.body.postId]);
 
-        let sqlPostLikeIncrement = `UPDATE post
-        SET like_count = like_count - ${1}
-        WHERE post_id = ?;`;
-        const post_like_increment = await db.query(sqlPostLikeIncrement, [
+        let like_count_sql = `SELECT like_count FROM post WHERE post_id = ?`;
+        const like_count_result = await db.query(like_count_sql, [
           req.body.postId,
         ]);
+        console.log(like_count_result[0], "like count");
+        console.log(like_count_result[0].like_count > 0, "like count");
 
-        res.json({ message: "Data is already present", duplicate: true });
+        if (like_count_result[0].like_count > 0) {
+          // dcrement like count
+          let sqlPostLikeDecrement = `UPDATE post
+          SET like_count = like_count - ${1}
+          WHERE post_id = ?;`;
+          const post_like_decrement = await db.query(sqlPostLikeDecrement, [
+            req.body.postId,
+          ]);
+          console.log("decrement");
+          res.json({ message: "Data is already present", duplicate: true });
+        } else {
+          let sqlPostLikeDecrement = `UPDATE post
+          SET like_count = ${0}
+          WHERE post_id = ?;`;
+          const post_like_decrement = await db.query(sqlPostLikeDecrement, [
+            req.body.postId,
+          ]);
+          console.log("like set to 0");
+          res.json({ message: "Data is already present", duplicate: true });
+        }
       } else {
-        // if not liked before
+        console.log("eleeeeeeee");
+
+        // // if not liked before
         let sqlPostLikeIncrement = `UPDATE post
         SET like_count = like_count + ${1}
         WHERE post_id = ?;`;

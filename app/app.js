@@ -99,25 +99,105 @@ const logout = (req, res) => {
   res.status(200).json({ status: "success" });
 };
 
-app.get("/", async function (req, res) {
-  sql =
-    "SELECT Post.post_id,Post.title,Post.image_url,Post.description,Post.location,Post.like_count,Post.created_at AS post_created_at,User.user_id, User.username, User.email, User.profile_pic_url, User.gender, User.first_name, User.last_name, User.dob, User.age,User.created_at AS user_created_at FROM Post JOIN User ON Post.user_id = User.user_id";
-  db.query(sql).then(async (results) => {
-    // console.log(results);
-    for (let p of results) {
-      let getObjParams = {
-        Bucket: bucketName,
-        Key: p.image_url,
-      };
-      let command = new GetObjectCommand(getObjParams);
-      let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-      p.imageURL = url;
-    }
-    // console.log(results);
-    res.render("home", { posts: results });
-  });
+// app.get("/", async function (req, res) {
+//   let sql = "";
+//   sql =
+//     "SELECT Post.post_id,Post.title,Post.image_url,Post.description,Post.location,Post.like_count,Post.created_at AS post_created_at,User.user_id, User.username, User.email, User.profile_pic_url, User.gender, User.first_name, User.last_name, User.dob, User.age,User.created_at AS user_created_at FROM Post JOIN User ON Post.user_id = User.user_id";
+//   db.query(sql).then(async (results) => {
+//     // console.log(results);
+//     for (let p of results) {
+//       let getObjParams = {
+//         Bucket: bucketName,
+//         Key: p.image_url,
+//       };
+//       let command = new GetObjectCommand(getObjParams);
+//       let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+//       p.imageURL = url;
+//     }
+//     // console.log(results);
+//     res.render("home", { posts: results });
+//   });
+// });
 
-  // res.render("home", { posts });
+app.get("/", async function (req, res) {
+  let token = req?.cookies?.token;
+  if (token) {
+    jwt.verify(token, secretKey, (err, user) => {
+      if (err) {
+        return res.redirect("/login"); // Invalid token -> go to login
+      }
+
+      //    user {
+      //  userId: 1,
+      //   username: 'v1',
+      //   profile_pic: '/image/samImg.jpg',
+      //   iat: 1735589537,
+      //    exp: 1735593137
+      //  }
+      req.user = user; // Attach user data to request
+    });
+  }
+
+  let sql = "";
+
+  // console.log(req.cookies.token);
+  if (token) {
+    try {
+      sql = `
+  SELECT Post.post_id, Post.title, Post.image_url, Post.description, Post.location, Post.like_count,
+  Post.created_at AS post_created_at, User.user_id, User.username, User.email, User.profile_pic_url,
+  User.gender, User.first_name, User.last_name, User.dob, User.age, User.created_at AS user_created_at,
+  CASE WHEN user_likes_post.user_id IS NOT NULL THEN 1 ELSE 0 END AS is_liked
+  FROM Post
+  JOIN User ON Post.user_id = User.user_id
+  LEFT JOIN user_likes_post
+    ON Post.post_id = user_likes_post.post_id AND user_likes_post.user_id = ?`;
+      db.query(sql, [req.user.userId]).then(async (results) => {
+        console.log(results[0], "from post with token");
+
+        // console.log(results);
+        for (let p of results) {
+          let getObjParams = {
+            Bucket: bucketName,
+            Key: p.image_url,
+          };
+          let command = new GetObjectCommand(getObjParams);
+          let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+          p.imageURL = url;
+        }
+        // console.log(results);
+
+        res.render("home", { posts: results });
+      });
+
+      // res.json({ message: "Data received successfully" });
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    sql =
+      "SELECT Post.post_id,Post.title,Post.image_url,Post.description,Post.location,Post.like_count,Post.created_at AS post_created_at,User.user_id, User.username, User.email, User.profile_pic_url, User.gender, User.first_name, User.last_name, User.dob, User.age,User.created_at AS user_created_at FROM Post JOIN User ON Post.user_id = User.user_id";
+    try {
+      db.query(sql).then(async (results) => {
+        // console.log(results);
+        for (let p of results) {
+          let getObjParams = {
+            Bucket: bucketName,
+            Key: p.image_url,
+          };
+          let command = new GetObjectCommand(getObjParams);
+          let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+          p.imageURL = url;
+        }
+
+        res.render("home", { posts: results });
+
+        // console.log(results);
+      });
+    } catch (error) {}
+
+    // res.render("home", { posts: r });
+  }
 });
 
 app.get("/about", function (req, res) {
@@ -274,11 +354,11 @@ app.post(
   upload.single("image"),
   authenticateToken,
   async function (req, res) {
-    console.log(req.body);
-    console.log(req.file);
-    console.log(req.file.buffer);
+    // console.log(req.body);
+    // console.log(req.file);
+    // console.log(req.file.buffer);
 
-    console.log(req.body);
+    // console.log(req.body);
 
     const imageKey = randomImageName();
     const params = {
@@ -323,11 +403,11 @@ app.post(
         imageKey,
       ]);
 
-      console.log(
-        result.insertId,
-        categoryResult[0].category_id,
-        "------------"
-      );
+      // console.log(
+      //   result.insertId,
+      //   categoryResult[0].category_id,
+      //   "------------"
+      // );
 
       // link post with category
       var sql =
@@ -339,7 +419,7 @@ app.post(
 
       // if it is a new category
     } else {
-      console.log("new category");
+      // console.log("new category");
       // create new category
       var sql = "INSERT INTO Category (category_name) VALUES (?)";
       const category_result = await db.query(sql, [req.body.category]);

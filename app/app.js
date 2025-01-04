@@ -143,32 +143,74 @@ app.get("/", async function (req, res) {
   // console.log(req.cookies.token);
   if (token) {
     try {
+      //     sql = `
+      // SELECT Post.post_id, Post.title, Post.image_url, Post.description, Post.location, Post.like_count,
+      // Post.created_at AS post_created_at, User.user_id, User.username, User.email, User.profile_pic_url,
+      // User.gender, User.first_name, User.last_name, User.dob, User.age, User.created_at AS user_created_at,
+      // CASE WHEN user_likes_post.user_id IS NOT NULL THEN 1 ELSE 0 END AS is_liked
+      // FROM Post
+      // JOIN User ON Post.user_id = User.user_id
+      // LEFT JOIN user_likes_post
+      //   ON Post.post_id = user_likes_post.post_id AND user_likes_post.user_id = ?`;
+
       sql = `
-  SELECT Post.post_id, Post.title, Post.image_url, Post.description, Post.location, Post.like_count,
-  Post.created_at AS post_created_at, User.user_id, User.username, User.email, User.profile_pic_url,
-  User.gender, User.first_name, User.last_name, User.dob, User.age, User.created_at AS user_created_at,
-  CASE WHEN user_likes_post.user_id IS NOT NULL THEN 1 ELSE 0 END AS is_liked
-  FROM Post
-  JOIN User ON Post.user_id = User.user_id
-  LEFT JOIN user_likes_post
-    ON Post.post_id = user_likes_post.post_id AND user_likes_post.user_id = ?`;
-      db.query(sql, [req.user.userId]).then(async (results) => {
-        console.log(results[0], "from post with token");
+      SELECT 
+  Post.post_id, 
+  Post.title, 
+  Post.image_url, 
+  Post.description, 
+  Post.location, 
+  Post.like_count,
+  Post.created_at AS post_created_at, 
+  User.user_id, 
+  User.username, 
+  User.email, 
+  User.profile_pic_url,
+  User.gender, 
+  User.first_name, 
+  User.last_name, 
+  User.dob, 
+  User.age, 
+  User.created_at AS user_created_at,
+  CASE 
+    WHEN user_likes_post.user_id IS NOT NULL THEN 1 
+    ELSE 0 
+  END AS is_liked,
+  CASE 
+    WHEN user_favourites_post.user_id IS NOT NULL THEN 1 
+    ELSE 0 
+  END AS is_favourited
+FROM 
+  Post
+JOIN 
+  User 
+  ON Post.user_id = User.user_id
+LEFT JOIN 
+  user_likes_post 
+  ON Post.post_id = user_likes_post.post_id AND user_likes_post.user_id = ?
+LEFT JOIN 
+  user_favourites_post 
+  ON Post.post_id = user_favourites_post.post_id AND user_favourites_post.user_id = ?;`;
+      db.query(sql, [req.user.userId, req.user.userId]).then(
+        async (results) => {
+          console.log(results[0], "from post with token");
 
-        // console.log(results);
-        for (let p of results) {
-          let getObjParams = {
-            Bucket: bucketName,
-            Key: p.image_url,
-          };
-          let command = new GetObjectCommand(getObjParams);
-          let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-          p.imageURL = url;
+          // console.log(results);
+          for (let p of results) {
+            let getObjParams = {
+              Bucket: bucketName,
+              Key: p.image_url,
+            };
+            let command = new GetObjectCommand(getObjParams);
+            let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+            p.imageURL = url;
+          }
+          // console.log(results);
+          console.log(results[0].like_count === 0, "likecountttttttt");
+
+          res.render("home", { posts: results });
         }
-        // console.log(results);
-
-        res.render("home", { posts: results });
-      });
+      );
 
       // res.json({ message: "Data received successfully" });
     } catch (error) {

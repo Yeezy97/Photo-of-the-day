@@ -10,6 +10,37 @@
   font-weight: 400;
 }
 
+.message-section-element {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  position: fixed;
+  top: 0rem;
+  padding: 15px;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  text-align: center;
+  font-size: 1.2em;
+  color: white;
+  font-weight: 600;
+  border-radius: 10px;
+  width: 40%;
+  z-index: 1000;
+  transform: translate(0rem, -2rem); /* Start off-screen above the viewport */
+  transition: transform 0.5s ease; /* Smooth transition */
+}
+
+.message-section-element.animate {
+  transform: translate(0, 4rem); /* Move into view */
+}
+
+.message-section-element.error {
+  background-color: rgb(240, 42, 42);
+}
+
+.message-section-element.success {
+  background-color: rgb(74, 196, 174);
+}
+
 /* navigation bar */
 
 .navbar {
@@ -358,7 +389,15 @@ button:hover {
 }
 
 .favourite-button:hover svg {
+  fill: #ff4040;
+}
+
+.favourited {
   fill: #f62929;
+}
+
+.not-favourited {
+  fill: none;
 }
 
 .like-button {
@@ -367,7 +406,15 @@ button:hover {
 }
 
 .like-button:hover svg {
+  fill: #2a86ff;
+}
+
+.liked {
   fill: #005cd4;
+}
+
+.not-liked {
+  fill: none;
 }
 
 .card > img {

@@ -24,6 +24,10 @@ nav.navbar
       span.mobile-menu-icon
         svg(xmlns='http://www.w3.org/2000/svg' height='28' viewbox='0 96 960 960' width='28')
           path(d='M120 816v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z')
+      if user
+        a.dashboard-button.hideOnMobile(href='/dashboard') Dashboard
+        a.login-button.hideOnMobile(href='/logout') Logout
+
   // Mobile Navigation Bar
   .sidenav.active
     span.mobile-menu-close
@@ -41,5 +45,8 @@ nav.navbar
       if !user
         li
           a(href='/login') login
+      if user 
+        li
+          a(href='/dashboard') Dashboard
         li
           a(href='/logout') Logout

@@ -203,14 +203,55 @@ LEFT JOIN
             };
             let command = new GetObjectCommand(getObjParams);
             let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+            let getUserPicParams = {
+              Bucket: bucketName,
+              Key: p.profile_pic_url,
+            };
+            console.log(p.profile_pic_url);
+
+            let commanduser = new GetObjectCommand(getUserPicParams);
+            let profileURL = await getSignedUrl(s3, commanduser, {
+              expiresIn: 3600,
+            });
+            p.profileIMG = profileURL;
+
             p.imageURL = url;
           }
-          // console.log(results);
-          console.log(results[0].like_count === 0, "likecountttttttt");
 
-          res.render("home", { posts: results });
+          res.render("home", { posts: results, user: req.user });
         }
       );
+
+      // db.query(sql, [req.user.userId, req.user.userId]).then(
+      //   async (results) => {
+      //     await Promise.all(
+      //       results.map(async (item) => {
+      //         let getObjParams = {
+      //           Bucket: bucketName,
+      //           Key: item.image_url,
+      //         };
+      //         let command = new GetObjectCommand(getObjParams);
+      //         let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      //         item.imageURL = url;
+
+      //         // user profile pic
+      //         let getUserPicParams = {
+      //           Bucket: bucketName,
+      //           Key: item.profile_pic_url,
+      //         };
+
+      //         let commanduser = new GetObjectCommand(getUserPicParams);
+      //         let profileURL = await getSignedUrl(s3, commanduser, {
+      //           expiresIn: 3600,
+      //         });
+      //         item.profileIMG = profileURL;
+      //       })
+      //     );
+      //   }
+      // );
+
+      // res.render("home", { posts: results, user: req.user });
 
       // res.json({ message: "Data received successfully" });
     } catch (error) {
@@ -230,6 +271,17 @@ LEFT JOIN
           let command = new GetObjectCommand(getObjParams);
           let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
           p.imageURL = url;
+
+          let getUserPicParams = {
+            Bucket: bucketName,
+            Key: p.profile_pic_url,
+          };
+
+          let commanduser = new GetObjectCommand(getUserPicParams);
+          let profileURL = await getSignedUrl(s3, commanduser, {
+            expiresIn: 3600,
+          });
+          p.profileIMG = profileURL;
         }
 
         res.render("home", { posts: results });
@@ -402,6 +454,8 @@ app.post(
 
     // console.log(req.body);
 
+    console.log("create post");
+
     const imageKey = randomImageName();
     const params = {
       Bucket: bucketName,
@@ -438,7 +492,7 @@ app.post(
       var sql =
         "INSERT INTO Post ( user_id, title, description, location, image_url ) VALUES (?,?,?,?,?)";
       const result = await db.query(sql, [
-        2,
+        req.user.userId,
         req.body.title,
         req.body.description,
         req.body.location,
@@ -470,7 +524,7 @@ app.post(
       var sql =
         "INSERT INTO Post ( user_id, title, description, location, image_url ) VALUES (?,?,?,?,?)";
       const post_result = await db.query(sql, [
-        2,
+        req.user.userId,
         req.body.title,
         req.body.description,
         req.body.location,
@@ -500,7 +554,6 @@ app.post(
     var sql = `SELECT * 
     FROM Category`;
     const result = await db.query(sql);
-    console.log(result);
 
     res.render("upload-image", { user: req.user, options: result });
 

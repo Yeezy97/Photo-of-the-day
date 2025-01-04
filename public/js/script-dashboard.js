@@ -6,7 +6,7 @@ const dashboard_menu = document.querySelectorAll(".menu-button");
 const profile_newpassword = document.querySelector(".newpassword");
 const profile_confirmpassword = document.querySelector(".confirmpassword");
 const profile_form = document.querySelector(".form-profile");
-const submit_button_profile = document.querySelector(".submit-button");
+const submit_button_profile = document.querySelector(".submit-button-profile");
 const profile_error_message = document.querySelector(".error");
 
 let html_element = document.getElementsByTagName("html");

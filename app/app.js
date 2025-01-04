@@ -554,16 +554,20 @@ app.post("/dashboard/favourite-post", async (req, res) => {
   // console.log(req.cookies.token);
   if (token) {
     try {
-      var sql =
-        "INSERT INTO user_favourites_post ( user_id, post_id ) VALUES (?,?)";
-      const post_category_result = await db.query(sql, [
+      let sql =
+        "INSERT IGNORE INTO user_favourites_post ( user_id, post_id ) VALUES (?,?)";
+      const user_post_fvt = await db.query(sql, [
         userIdFvtPost,
         req.body.postId,
       ]);
 
-      console.log(post_category_result[0]);
+      if (user_post_fvt.affectedRows === 0) {
+        let sql =
+          "DELETE FROM user_favourites_post WHERE user_id = ? AND post_id = ?";
+        const result = await db.query(sql, [userIdFvtPost, req.body.postId]);
 
-      res.json({ message: "Data received successfully" });
+        res.json({ message: "Data is already present", duplicate: true });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -615,8 +619,6 @@ app.post("/dashboard/like-post", async (req, res) => {
         const like_count_result = await db.query(like_count_sql, [
           req.body.postId,
         ]);
-        console.log(like_count_result[0], "like count");
-        console.log(like_count_result[0].like_count > 0, "like count");
 
         if (like_count_result[0].like_count > 0) {
           // dcrement like count
@@ -635,13 +637,12 @@ app.post("/dashboard/like-post", async (req, res) => {
           const post_like_decrement = await db.query(sqlPostLikeDecrement, [
             req.body.postId,
           ]);
-          console.log("like set to 0");
           res.json({ message: "Data is already present", duplicate: true });
         }
       } else {
         console.log("eleeeeeeee");
 
-        // // if not liked before
+        // if not liked before
         let sqlPostLikeIncrement = `UPDATE post
         SET like_count = like_count + ${1}
         WHERE post_id = ?;`;

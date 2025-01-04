@@ -511,25 +511,90 @@ app.post(
 );
 
 app.get("/dashboard/favourite-post", authenticateToken, async (req, res) => {
-  console.log(req.user, "from favourite");
-  let userId = req.user.userId;
-  let sql = `Select * FROM user_favourites_post
-     JOIN post ON post.post_id = user_favourites_post.post_id
-      WHERE user_favourites_post.user_id = ? `;
-  db.query(sql, [userId]).then(async (results) => {
-    // console.log(results);
-    for (let p of results) {
-      let getObjParams = {
-        Bucket: bucketName,
-        Key: p.image_url,
-      };
-      let command = new GetObjectCommand(getObjParams);
-      let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-      p.imageURL = url;
-    }
-    // console.log(results);
-    res.render("favourite", { user: req.user, posts: results });
-  });
+  try {
+    //     sql = `
+    // SELECT Post.post_id, Post.title, Post.image_url, Post.description, Post.location, Post.like_count,
+    // Post.created_at AS post_created_at, User.user_id, User.username, User.email, User.profile_pic_url,
+    // User.gender, User.first_name, User.last_name, User.dob, User.age, User.created_at AS user_created_at,
+    // CASE WHEN user_likes_post.user_id IS NOT NULL THEN 1 ELSE 0 END AS is_liked
+    // FROM Post
+    // JOIN User ON Post.user_id = User.user_id
+    // LEFT JOIN user_likes_post
+    //   ON Post.post_id = user_likes_post.post_id AND user_likes_post.user_id = ?`;
+
+    sql = `
+    SELECT 
+Post.post_id, 
+Post.title, 
+Post.image_url, 
+Post.description, 
+Post.location, 
+Post.like_count,
+Post.created_at AS post_created_at, 
+User.user_id, 
+User.username, 
+User.email, 
+User.profile_pic_url,
+User.gender, 
+User.first_name, 
+User.last_name, 
+User.dob, 
+User.age, 
+User.created_at AS user_created_at,
+CASE 
+  WHEN user_likes_post.user_id IS NOT NULL THEN 1 
+  ELSE 0 
+END AS is_liked,
+CASE 
+  WHEN user_favourites_post.user_id IS NOT NULL THEN 1 
+  ELSE 0 
+END AS is_favourited
+FROM 
+Post
+JOIN 
+User 
+ON Post.user_id = User.user_id
+LEFT JOIN 
+user_likes_post 
+ON Post.post_id = user_likes_post.post_id AND user_likes_post.user_id = ?
+JOIN 
+user_favourites_post 
+ON Post.post_id = user_favourites_post.post_id AND user_favourites_post.user_id = ?;`;
+    db.query(sql, [req.user.userId, req.user.userId]).then(async (results) => {
+      // console.log(results);
+      for (let p of results) {
+        let getObjParams = {
+          Bucket: bucketName,
+          Key: p.image_url,
+        };
+        let command = new GetObjectCommand(getObjParams);
+        let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+        p.imageURL = url;
+      }
+      // console.log(results);
+
+      res.render("favourite", { user: req.user, posts: results });
+    });
+
+    // res.json({ message: "Data received successfully" });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.post("/dashboard/remove-favourite", authenticateToken, async (req, res) => {
+  try {
+    let sql =
+      "DELETE FROM user_favourites_post WHERE user_id = ? AND post_id = ?";
+    const result = await db.query(sql, [req.user.userId, req.body.postId]);
+
+    res.json({ message: "Data is already present", status: true });
+
+    // return res.redirect("/dashboard/favourite-post");
+    // res.json({ message: "Data is already present", duplicate: true });
+  } catch (error) {
+    res.json({ message: "Something went wrong,try again" });
+  }
 });
 
 app.post("/dashboard/favourite-post", async (req, res) => {
@@ -609,6 +674,7 @@ app.post("/dashboard/like-post", async (req, res) => {
 
       console.log(post_category_result);
       // if post already liked
+      let like_count_result = "";
       if (post_category_result.affectedRows === 0) {
         // remove like and user ids from table
         let sql =
@@ -616,9 +682,7 @@ app.post("/dashboard/like-post", async (req, res) => {
         const result = await db.query(sql, [userIdFvtPost, req.body.postId]);
 
         let like_count_sql = `SELECT like_count FROM post WHERE post_id = ?`;
-        const like_count_result = await db.query(like_count_sql, [
-          req.body.postId,
-        ]);
+        like_count_result = await db.query(like_count_sql, [req.body.postId]);
 
         if (like_count_result[0].like_count > 0) {
           // dcrement like count
@@ -629,7 +693,13 @@ app.post("/dashboard/like-post", async (req, res) => {
             req.body.postId,
           ]);
           console.log("decrement");
-          res.json({ message: "Data is already present", duplicate: true });
+
+          let lastest_like_count = like_count_result[0].like_count - 1;
+
+          res.json({
+            message: "Data inserted successfully",
+            likeCount: lastest_like_count,
+          });
         } else {
           let sqlPostLikeDecrement = `UPDATE post
           SET like_count = ${0}
@@ -637,8 +707,16 @@ app.post("/dashboard/like-post", async (req, res) => {
           const post_like_decrement = await db.query(sqlPostLikeDecrement, [
             req.body.postId,
           ]);
-          res.json({ message: "Data is already present", duplicate: true });
+
+          let lastest_like_count = 0;
+
+          res.json({
+            message: "Data inserted successfully",
+            likeCount: lastest_like_count,
+          });
         }
+
+        console.log(like_count_result[0]);
       } else {
         console.log("eleeeeeeee");
 
@@ -646,13 +724,24 @@ app.post("/dashboard/like-post", async (req, res) => {
         let sqlPostLikeIncrement = `UPDATE post
         SET like_count = like_count + ${1}
         WHERE post_id = ?;`;
-        const post_like_increment = await db.query(sqlPostLikeIncrement, [
-          req.body.postId,
-        ]);
+        const like_count_afterIncrement_result = await db.query(
+          sqlPostLikeIncrement,
+          [req.body.postId]
+        );
 
-        res.json({ message: "Data inserted successfully", duplicate: false });
+        let like_count_sql = `SELECT like_count FROM post WHERE post_id = ?`;
+        like_count_result = await db.query(like_count_sql, [req.body.postId]);
+
+        let lastest_like_count = like_count_result[0].like_count;
+
+        res.json({
+          message: "Data inserted successfully",
+          likeCount: lastest_like_count,
+        });
       }
     } catch (error) {
+      res.json({ message: "Data not inserted successfully", success: false });
+
       console.log(error);
     }
   } else {

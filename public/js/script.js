@@ -62,6 +62,8 @@ favourite_button_element.forEach((item) => {
     console.log(e);
     console.log(e.target);
     // if user is logged in
+    console.log(window.location.pathname);
+
     if (token) {
       // const parent = e.target.parentElement;
       const parentElement = e.target.closest(".card");
@@ -101,6 +103,41 @@ favourite_button_element.forEach((item) => {
         // Optionally, send a request to the server to mark as liked
       }
 
+      // from dashboard favourite page
+      if (window.location.pathname === "/dashboard/favourite-post") {
+        try {
+          let response = await fetch("/dashboard/remove-favourite", {
+            method: "POST", // Method is POST
+            headers: {
+              "Content-Type": "application/json", // Inform the server that the body is JSON
+            },
+            body: JSON.stringify({
+              postId: postId,
+            }), // Sending the userId and postId as JSON data
+          });
+
+          if (response.ok) {
+            // const result = await response.json(); // Handle the response from the server
+            // if (result.status) {
+            //   let response = await fetch("/dashboard/favourite-post", {
+            //     method: "GET", // Method is POST
+            //     headers: {
+            //       "Content-Type": "application/json", // Inform the server that the body is JSON
+            //     },
+            //   });
+            // }
+            window.location.reload();
+            console.log(result); // Process the server's response
+          } else {
+            console.error("Error:", response.status); // Handle errors if the request fails
+          }
+        } catch (error) {
+          console.log(error);
+        }
+        return;
+      }
+
+      // from home page
       try {
         let response = await fetch("/dashboard/favourite-post", {
           method: "POST", // Method is POST
@@ -189,11 +226,26 @@ like_button_element.forEach((item) => {
 
         if (response.ok) {
           const result = await response.json(); // Handle the response from the server
-          console.log(result); // Process the server's response
+
+          const likeButton = e.target.closest(".like-button");
+          if (likeButton) {
+            // Find the nearest card containing the clicked like button
+            const card = likeButton.closest(".card");
+
+            // Get the like-counter element within the same card
+            const counter = card.querySelector(".like-counter");
+
+            // Increment the like counter
+            // const currentCount = parseInt(counter.innerHTML, 10);
+            counter.innerHTML = result.likeCount;
+          }
         } else {
+          messageSection("error", "Something went wrong,try again!");
+
           console.error("Error:", response.status); // Handle errors if the request fails
         }
       } catch (error) {
+        messageSection("error", "Something went wrong,try again!");
         console.log(error);
       }
     } else {

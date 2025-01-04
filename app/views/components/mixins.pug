@@ -1,5 +1,3 @@
-
-
 //- Card Mixin
 mixin card(post)
     - var likeClass = post.is_liked == 1 ? 'liked' : 'not-liked'
@@ -30,7 +28,7 @@ mixin card(post)
                     img.inner-section-img(src=post.profile_pic_url, alt=post.title)
                     p= post.username
                 div.like-button-section
-                    p #{post.like_count}
+                    p.like-counter #{post.like_count}
                     
                     if post.is_liked
                         div.like-button

@@ -455,111 +455,123 @@ app.post(
     // console.log(req.body);
 
     console.log("create post");
+    try {
+      const imageKey = randomImageName();
+      const params = {
+        Bucket: bucketName,
+        Key: imageKey,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+      };
 
-    const imageKey = randomImageName();
-    const params = {
-      Bucket: bucketName,
-      Key: imageKey,
-      Body: req.file.buffer,
-      ContentType: req.file.mimetype,
-    };
+      // save image to s3 bucket
+      const command = new PutObjectCommand(params);
+      await s3.send(command);
 
-    // save image to s3 bucket
-    const command = new PutObjectCommand(params);
-    await s3.send(command);
+      // var sql =
+      //   "INSERT INTO Post (post_id ,user_id, title, location, description, image_url ) VALUES (?, ? , ? , ? ,? , ?)";
+      // const result = await db.query(sql, [
+      //   11,
+      //   1,
+      //   req.body.title,
+      //   req.body.location,
+      //   req.body.description,
+      //   imageKey,
+      // ]);
 
-    // var sql =
-    //   "INSERT INTO Post (post_id ,user_id, title, location, description, image_url ) VALUES (?, ? , ? , ? ,? , ?)";
-    // const result = await db.query(sql, [
-    //   11,
-    //   1,
-    //   req.body.title,
-    //   req.body.location,
-    //   req.body.description,
-    //   imageKey,
-    // ]);
+      const longRandomNumberArray = generateLongRandomNumberArray(5);
 
-    const longRandomNumberArray = generateLongRandomNumberArray(5);
+      // query all categories from db
+      var sql = "SELECT * FROM CATEGORY WHERE category_name = ?";
+      const categoryResult = await db.query(sql, [req.body.category]);
+      console.log(categoryResult, "category result");
 
-    // query all categories from db
-    var sql = "SELECT * FROM CATEGORY WHERE category_name = ?";
-    const categoryResult = await db.query(sql, [req.body.category]);
-    console.log(categoryResult, "category result");
+      // if category already exist
+      if (categoryResult.length > 0) {
+        // add post data in db
+        var sql =
+          "INSERT INTO Post ( user_id, title, description, location, image_url ) VALUES (?,?,?,?,?)";
+        const result = await db.query(sql, [
+          req.user.userId,
+          req.body.title,
+          req.body.description,
+          req.body.location,
+          imageKey,
+        ]);
 
-    // if category already exist
-    if (categoryResult.length > 0) {
-      // add post data in db
-      var sql =
-        "INSERT INTO Post ( user_id, title, description, location, image_url ) VALUES (?,?,?,?,?)";
-      const result = await db.query(sql, [
-        req.user.userId,
-        req.body.title,
-        req.body.description,
-        req.body.location,
-        imageKey,
-      ]);
+        // console.log(
+        //   result.insertId,
+        //   categoryResult[0].category_id,
+        //   "------------"
+        // );
 
-      // console.log(
-      //   result.insertId,
-      //   categoryResult[0].category_id,
-      //   "------------"
-      // );
+        // link post with category
+        var sql =
+          "INSERT INTO Post_Category ( post_id, category_id ) VALUES (?,?)";
+        const post_category_result = await db.query(sql, [
+          result.insertId,
+          categoryResult[0].category_id,
+        ]);
 
-      // link post with category
-      var sql =
-        "INSERT INTO Post_Category ( post_id, category_id ) VALUES (?,?)";
-      const post_category_result = await db.query(sql, [
-        result.insertId,
-        categoryResult[0].category_id,
-      ]);
+        // if it is a new category
+      } else {
+        // console.log("new category");
+        // create new category
+        var sql = "INSERT INTO Category (category_name) VALUES (?)";
+        const category_result = await db.query(sql, [req.body.category]);
 
-      // if it is a new category
-    } else {
-      // console.log("new category");
-      // create new category
-      var sql = "INSERT INTO Category (category_name) VALUES (?)";
-      const category_result = await db.query(sql, [req.body.category]);
+        // add post data in db
+        var sql =
+          "INSERT INTO Post ( user_id, title, description, location, image_url ) VALUES (?,?,?,?,?)";
+        const post_result = await db.query(sql, [
+          req.user.userId,
+          req.body.title,
+          req.body.description,
+          req.body.location,
+          "imageKey",
+        ]);
 
-      // add post data in db
-      var sql =
-        "INSERT INTO Post ( user_id, title, description, location, image_url ) VALUES (?,?,?,?,?)";
-      const post_result = await db.query(sql, [
-        req.user.userId,
-        req.body.title,
-        req.body.description,
-        req.body.location,
-        "imageKey",
-      ]);
+        // link category
+        var sql =
+          "INSERT INTO Post_Category ( post_id, category_id ) VALUES (?,?)";
+        const post_category_result = await db.query(sql, [
+          post_result.insertId,
+          category_result.insertId,
+        ]);
+      }
 
-      // link category
-      var sql =
-        "INSERT INTO Post_Category ( post_id, category_id ) VALUES (?,?)";
-      const post_category_result = await db.query(sql, [
-        post_result.insertId,
-        category_result.insertId,
-      ]);
-    }
+      // var sql =
+      //   "INSERT INTO Post (post_id, user_id, title, description, location, image_url ) VALUES (?,?,?,?,?,?)";
+      // const result = await db.query(sql, [
+      //   2,
+      //   req.body.title,
+      //   req.body.description,
+      //   req.body.location,
+      //   imageKey,
+      // ]);
 
-    // var sql =
-    //   "INSERT INTO Post (post_id, user_id, title, description, location, image_url ) VALUES (?,?,?,?,?,?)";
-    // const result = await db.query(sql, [
-    //   2,
-    //   req.body.title,
-    //   req.body.description,
-    //   req.body.location,
-    //   imageKey,
-    // ]);
-
-    // query latest category list, and return in frontend
-    var sql = `SELECT * 
+      // query latest category list, and return in frontend
+      var sql = `SELECT * 
     FROM Category`;
-    const result = await db.query(sql);
+      const result = await db.query(sql);
 
-    res.render("upload-image", { user: req.user, options: result });
+      res.json({
+        user: req.user,
+        options: result,
+        status: true,
+      });
 
-    // res.send({ sometext: "done" });
+      // res.send({ sometext: "done" });
 
-    // res.render("posts", { posts });
+      // res.render("posts", { posts });
+    } catch (error) {
+      res.json({
+        user: req.user,
+        status: false,
+      });
+
+      // res.render("upload-image", { user: req.user, status: false });
+    }
   }
 );
 
@@ -879,9 +891,10 @@ app.post(
     } catch (err) {
       console.error(`Error while comparing `, err.message);
     }
-    res.render("profile", { user: req.user, error: "Updated" });
+    // res.render("profile", { user: req.user, error: "Updated" });
+    res.render("profile", { user: req.user, message: "Updated" });
 
-    // return res.status(200).json({ error: "Profile updated successfully" });
+    // return res.status(200).json({ message: "Profile updated successfully" });
 
     // res.render("profile", { user: req.user, error: "Updated" });
   }

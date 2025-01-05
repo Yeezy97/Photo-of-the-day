@@ -21,7 +21,9 @@ block main
                         .input-group
                             label(for='image') Change Profile Image
                             input(type='file', id='image', name='image', accept='image/*')
-                            button.submit-button-profile(type='click') Update Profile
-                        if error
-                            p.error 'asdfsdfasf'
+                            button.submit-button-profile Update Profile
+                        if message
+                            p.error #{message}
+                div.spinner.hidden
+                    div.loader
                             

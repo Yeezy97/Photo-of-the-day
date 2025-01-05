@@ -62,11 +62,7 @@ app.set("views", path.join(__dirname, "./views/pages"));
 const randomImageName = (bytes = 32) =>
   crypto.randomBytes(bytes).toString("hex");
 
-function generateLongRandomNumberArray(length) {
-  return Array.from({ length }, () => Math.floor(Math.random() * 10)).join("");
-}
-
-console.log(app.get("views"), "----------------loggg");
+// console.log(app.get("views"), "----------------loggg");
 // Get the functions in the db.js file to use
 const db = require("./services/db");
 

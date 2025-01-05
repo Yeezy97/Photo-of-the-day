@@ -221,8 +221,8 @@ favourite_button_element.forEach((item) => {
       // from dashboard favourite page
       if (window.location.pathname === "/dashboard/favourite-post") {
         try {
-          let response = await fetch("/dashboard/remove-favourite", {
-            method: "POST", // Method is POST
+          let response = await fetch("/dashboard/favourite-post", {
+            method: "DELETE", // Method is POST
             headers: {
               "Content-Type": "application/json", // Inform the server that the body is JSON
             },

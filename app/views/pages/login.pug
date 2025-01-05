@@ -9,7 +9,7 @@ block main
                 .modal-content
                     img.login-logo(src='/image/logo.png' alt='website logo')
                     h2 Login to See more
-                    form(action='/login', method='post')
+                    form(action='/auth/login', method='post')
                         .input-group
                             label(for='email') Email
                             input(type='email', id='email', name='email', required)

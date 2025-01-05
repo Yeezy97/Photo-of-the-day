@@ -113,6 +113,7 @@ if (submit_button_profile) {
         }
       } catch (error) {
         console.error("Error during fetch operation", error);
+        messageSection("error", "Something went wrong,try again.");
       }
     } else if (
       profile_newpassword.value !== "" ||

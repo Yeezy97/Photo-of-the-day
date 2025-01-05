@@ -19,14 +19,14 @@ nav.navbar
       li.hideOnMobile
         a(href='/about') About
       if !user
-        a.login-button(href='/login') Login
-        a.signup-button.hideOnMobile(href='/signup') Signup
+        a.login-button(href='/auth/login') Login
+        a.signup-button.hideOnMobile(href='/auth/signup') Signup
       span.mobile-menu-icon
         svg(xmlns='http://www.w3.org/2000/svg' height='28' viewbox='0 96 960 960' width='28')
           path(d='M120 816v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z')
       if user
         a.dashboard-button.hideOnMobile(href='/dashboard') Dashboard
-        a.login-button.hideOnMobile(href='/logout') Logout
+        a.login-button.hideOnMobile(href='/auth/logout') Logout
 
   // Mobile Navigation Bar
   .sidenav.active
@@ -44,9 +44,9 @@ nav.navbar
         a(href='/about') About
       if !user
         li
-          a(href='/login') login
+          a(href='/auth/login') login
       if user 
         li
           a(href='/dashboard') Dashboard
         li
-          a(href='/logout') Logout
+          a(href='/auth/logout') Logout

@@ -1,7 +1,6 @@
 // Import express.js
 const express = require("express");
 const path = require("path");
-const cron = require("node-cron");
 
 // Create express app
 const app = express();
@@ -35,14 +34,16 @@ async function selectPhotoOfTheDay() {
 
       // If the selected photo is less than 24 hours old, skip the new selection
       if (timeDifference < 24 * 60 * 60 * 1000) {
-        console.log("Photo of the Day is already selected within the last 24 hours. Skipping selection.");
+        console.log(
+          "Photo of the Day is already selected within the last 24 hours. Skipping selection."
+        );
         return;
       }
     }
 
     // Proceed to select the new photo based on likes from the last 2 minutes
     const now = new Date();
-    const last2Minutes = new Date(now.getTime() - (2 * 60 * 1000)); // Get the timestamp for 2 minutes ago
+    const last2Minutes = new Date(now.getTime() - 2 * 60 * 1000); // Get the timestamp for 2 minutes ago
     const mysqlFormattedDate = now.toISOString().slice(0, 19).replace("T", " ");
     // const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
 
@@ -65,7 +66,10 @@ async function selectPhotoOfTheDay() {
       LIMIT 1
     `;
 
-    const result = await db.query(photoQuery, [last2Minutes.toISOString(), now.toISOString()]);
+    const result = await db.query(photoQuery, [
+      last2Minutes.toISOString(),
+      now.toISOString(),
+    ]);
 
     if (result.length === 0) {
       console.log("No eligible photos found for Photo of the Day.");
@@ -80,7 +84,10 @@ async function selectPhotoOfTheDay() {
       SET selected_as_photo_of_the_day = 1, selectedAsPod_at = ?
       WHERE post_id = ?
     `;
-    await db.query(updatePhotoQuery, [mysqlFormattedDate, selectedPhoto.post_id]);
+    await db.query(updatePhotoQuery, [
+      mysqlFormattedDate,
+      selectedPhoto.post_id,
+    ]);
 
     console.log("Photo of the Day selected:", selectedPhoto);
   } catch (error) {

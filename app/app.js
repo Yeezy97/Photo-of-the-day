@@ -22,6 +22,8 @@ const homepageRouter = require("./routes/homepageRoutes");
 const authRouter = require("./routes/authRoutes");
 const { User } = require("./models/Users");
 
+const cron = require("node-cron");
+
 dotenv.config();
 
 // Create express app
@@ -66,6 +68,30 @@ const randomImageName = (bytes = 32) =>
 function generateLongRandomNumberArray(length) {
   return Array.from({ length }, () => Math.floor(Math.random() * 10)).join("");
 }
+
+// Schedule the task to run at midnight every day
+// cron.schedule("* * * * *", async () => {
+//   console.log("Task executed at:", new Date());
+//   try {
+//     let podSQL = `SELECT
+//     post_id,
+//     like_count
+// FROM
+//     post
+// WHERE
+//     created_at BETWEEN NOW() - INTERVAL 3 MINUTE AND NOW() - INTERVAL 1 MINUTE
+// ORDER BY
+//     like_count DESC;`;
+//     const podResult = await db.query(podSQL);
+
+//     console.log(podResult[0]);
+
+//     // res.json({
+//     //   message: "Data inserted successfully",
+//     //   likeCount: lastest_like_count,
+//     // });
+//   } catch (error) {}
+// });
 
 console.log(app.get("views"), "----------------loggg");
 // Get the functions in the db.js file to use

@@ -4,4 +4,10 @@ block main
   .main-dashboard
     include ../components/sidenav
     .section-main  
-        h2 This is the Dashboard
+        .counter-container 
+          .container-element 
+            h3.container-text Total Likes 
+            h1.container-counter #{totalLikes}
+          .container-element 
+            h3.container-text Total Post 
+            h1.container-counter #{totalPosts}

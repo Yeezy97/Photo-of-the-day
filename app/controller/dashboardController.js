@@ -34,7 +34,17 @@ const s3 = new S3Client({
 });
 
 const getDashboard = (req, res) => {
-  res.render("dashboard", { user: req.user });
+   const postModel = new Post();
+
+  let result = await postModel.queryTotalLikes(req, res);
+
+  let resultPost = await postModel.queryTotalPosts(req, res);
+
+  res.render("dashboard", {
+    user: req.user,
+    totalLikes: result[0].total_likes,
+    totalPosts: resultPost[0].total_posts,
+  });
 };
 
 const getFavouritePost = async (req, res) => {

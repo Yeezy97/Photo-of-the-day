@@ -340,6 +340,36 @@ class Post {
         );
     }
   }
+
+    async queryTotalLikes(req, res) {
+    try {
+      let sql =
+        "SELECT SUM(like_count) AS total_likes FROM post GROUP BY user_id = ?";
+      return await db.query(sql, [req.user.userId]);
+    } catch (dbError) {
+      console.error("Database query error:", dbError);
+      res
+        .status(500)
+        .send(
+          "An error occurred while retrieving posts. Please try again later."
+        );
+    }
+  }
+
+  async queryTotalPosts(req, res) {
+    try {
+      let sql = "SELECT COUNT(*) AS total_posts FROM post GROUP BY user_id = ?";
+      return await db.query(sql, [req.user.userId]);
+    } catch (dbError) {
+      console.error("Database query error:", dbError);
+      res
+        .status(500)
+        .send(
+          "An error occurred while retrieving posts. Please try again later."
+        );
+    }
+  }
+}
 }
 
 module.exports = {

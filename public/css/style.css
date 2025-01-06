@@ -689,6 +689,28 @@ button:hover {
   overflow: auto;
 }
 
+
+.counter-container {
+  display: flex;
+  text-align: center;
+  justify-content: space-around;
+  gap: 6rem;
+}
+
+.container-element {
+  text-align: center;
+  padding: 1.5rem 2.2rem;
+  border-radius: 2rem;
+
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}
+
+.container-element h1 {
+  color: #1579fc;
+}
+
 .dashboard-modal {
   background: rgba(255, 196, 196, 0.909);
   height: fit-content;

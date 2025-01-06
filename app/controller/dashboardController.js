@@ -33,8 +33,8 @@ const s3 = new S3Client({
   region: bucketRegion,
 });
 
-const getDashboard = (req, res) => {
-   const postModel = new Post();
+const getDashboard = async (req, res) => {
+  const postModel = new Post();
 
   let result = await postModel.queryTotalLikes(req, res);
 

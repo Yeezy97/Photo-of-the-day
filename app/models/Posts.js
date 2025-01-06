@@ -341,7 +341,7 @@ class Post {
     }
   }
 
-    async queryTotalLikes(req, res) {
+  async queryTotalLikes(req, res) {
     try {
       let sql =
         "SELECT SUM(like_count) AS total_likes FROM post GROUP BY user_id = ?";
@@ -369,7 +369,6 @@ class Post {
         );
     }
   }
-}
 }
 
 module.exports = {

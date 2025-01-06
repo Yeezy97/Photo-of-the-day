@@ -73,11 +73,6 @@ if (submit_button_profile) {
         });
 
         if (response.ok) {
-          console.log("from res ok 1");
-
-          // const html = await response.text(); // Get the HTML as a string
-          // html_element.innerHTML = html;
-          // return;
           messageElement.textContent = "Profile Updated";
           if (submit_button_profile) {
             submit_button_profile.after(messageElement);
@@ -85,31 +80,9 @@ if (submit_button_profile) {
           setTimeout(() => {
             messageElement.remove();
             window.location.reload();
-
-            // window.location.href = "/dashboard"; //if okay, redirect to the dashboard.
           }, 3000);
-          // const successData = await response.json();
-          // console.log("Profile updated successfully", successData);
-          // if (successData) {
-
-          // }
-
-          // window.reload();
         } else {
           const errorData = await response.json();
-          console.error("Error updating profile", errorData);
-          // const messageElement = document.createElement('p');
-          // messageElement.textContent = errorData.error;
-          // messageElement.style.position = 'absolute';
-          // messageElement.classList.add('message-element');
-          // form.after(messageElement)
-
-          //   setTimeout(() => {
-          //       messageElement.classList.add("active"); //trigger the transition
-          //         setTimeout(() => {
-          //             messageElement.remove(); // remove after transition
-          //     }, 500)
-          // }, 0)
         }
       } catch (error) {
         console.error("Error during fetch operation", error);
@@ -120,7 +93,6 @@ if (submit_button_profile) {
       profile_confirmpassword.value !== ""
     ) {
       // if password doesnt match
-
       if (profile_newpassword.value !== profile_confirmpassword.value) {
         spinner.classList.add("hidden");
         messageElement.textContent = "Password does not match!!";
@@ -130,7 +102,6 @@ if (submit_button_profile) {
         }, 3000);
       } else {
         // if all conditions matches then send data
-
         const formData = new FormData(profile_form); // Get the form data
 
         try {
@@ -140,43 +111,14 @@ if (submit_button_profile) {
           });
 
           if (response.ok) {
-            // const html = await response.text(); // Get the HTML as a string
-            // html_element.innerHTML = html;
-            // return;
-
             messageElement.textContent = "Profile Updated";
             submit_button_profile.after(messageElement);
             setTimeout(() => {
               messageElement.remove();
               window.location.reload();
-
-              // window.location.href = "/dashboard"; //if okay, redirect to the dashboard.
             }, 3000);
-            // const successData = await response.json();
-            // console.log("Profile updated successfully", successData);
-            // profile_error_message.textContent = successData.error;
-
-            // if (successData) {
-            // }
-            console.log("from res ok 2");
-
-            // const errorMessageContainer = document.querySelector(".dashboard-modal-content")
-            // errorMessageContainer.textContent = successData.message
           } else {
             const errorData = await response.json();
-            console.error("Error updating profile", errorData);
-            // const messageElement = document.createElement('p');
-            // messageElement.textContent = errorData.error;
-            // messageElement.style.position = 'absolute';
-            // messageElement.classList.add('message-element');
-            // form.after(messageElement)
-
-            //   setTimeout(() => {
-            //       messageElement.classList.add("active"); //trigger the transition
-            //         setTimeout(() => {
-            //             messageElement.remove(); // remove after transition
-            //     }, 500)
-            // }, 0)
           }
         } catch (error) {
           console.error("Error during fetch operation", error);
@@ -194,79 +136,71 @@ if (submit_button_profile) {
 if (submit_button_create) {
   submit_button_create.addEventListener("click", async function (e) {
     e.preventDefault();
-
-    spinner.classList.remove("hidden");
-
-    // const submitButtonCreate = document.querySelector('submit-button-create');
-    submit_button_create.textContent = "Loading...";
-    submit_button_create.disabled = true;
-
-    console.log("waiting");
-    let messageElement = document.createElement("p");
-    messageElement.classList.add("message-element");
-
     const formData = new FormData(create_form); // Get the form data
+    const title = formData.get("title");
+    const location = formData.get("location");
+    const description = formData.get("description");
+    const category = formData.get("category");
+    const image = formData.get("image");
+    if (title && location && description && category && image.name) {
+      spinner.classList.remove("hidden");
 
-    try {
-      const response = await fetch("/dashboard/create-post", {
-        method: "POST",
-        body: formData,
-      });
+      // const submitButtonCreate = document.querySelector('submit-button-create');
+      submit_button_create.textContent = "Loading...";
+      submit_button_create.disabled = true;
 
-      if (response.ok) {
-        messageElement.textContent = "Post Created";
-        submit_button_create.after(messageElement);
-        create_form.reset();
-        spinner.classList.add("hidden");
+      console.log("waiting");
+      let messageElement = document.createElement("p");
+      messageElement.classList.add("message-element");
 
-        setTimeout(() => {
-          messageElement.remove();
-          // window.location.reload();
-        }, 3000);
-        // const successData = await response.json();
-        // if (successData) {
-        //   console.log(successData.status, "success data block");
-        // }
-        // if (successData) {
-        //   messageElement.textContent = successData.error;
-        //   submit_button_create.after(messageElement);
-        //   setTimeout(() => {
-        //     messageElement.remove();
-        //   }, 4000);
-        // }
-        // const html = await response.text(); // Get the HTML as a string
-        // html_element.innerHTML = html;
-        // return;
+      try {
+        const response = await fetch("/dashboard/create-post", {
+          method: "POST",
+          body: formData,
+        });
 
-        // const successData = await response.json();
-        // console.log("Profile updated successfully", successData);
-        // if (successData) {
-        //   messageElement.textContent = successData.error;
-        //   submit_button_profile.after(messageElement);
-        //   setTimeout(() => {
-        //     messageElement.remove();
-        //   }, 4000);
-        // }
-        // messageSection("success", "Your post is created.");
-        // console.log("Profile updated successfully", successData);
-        // profile_error_message.textContent = successData.error;
-      } else {
-        const errorData = await response.json();
+        if (response.ok) {
+          if (response.status) {
+            messageElement.textContent = "Post Created";
+            submit_button_create.after(messageElement);
+            create_form.reset();
+          } else {
+            messageElement.textContent = "All fields required to created post.";
+            submit_button_create.after(messageElement);
+            create_form.reset();
+          }
 
-        console.log("failed");
+          spinner.classList.add("hidden");
 
-        console.error("Error updating profile", errorData);
+          setTimeout(() => {
+            messageElement.remove();
+          }, 3000);
+        } else {
+          const errorData = await response.json();
+
+          console.log("failed");
+
+          console.error("Error updating profile", errorData);
+          messageSection("error", "Something went wrong try again.");
+        }
+      } catch (error) {
+        console.log("failed from catch");
+
+        console.error("Error during fetch operation", error);
         messageSection("error", "Something went wrong try again.");
+      } finally {
+        submit_button_create.textContent = "Create Post";
+        submit_button_create.disabled = false;
+        console.log("finally success");
       }
-    } catch (error) {
-      console.log("failed from catch");
-
-      console.error("Error during fetch operation", error);
-      messageSection("error", "Something went wrong try again.");
-    } finally {
-      submit_button_create.textContent = "Create Post";
-      submit_button_create.disabled = false;
-      console.log("finally success");
+    } else {
+      let messageElement = document.createElement("p");
+      messageElement.classList.add("message-element");
+      messageElement.textContent = "Input fields missing value.";
+      submit_button_create.after(messageElement);
+      setTimeout(() => {
+        messageElement.remove();
+      }, 3000);
     }
   });
 }

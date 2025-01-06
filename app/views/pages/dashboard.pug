@@ -7,7 +7,7 @@ block main
         .counter-container 
           .container-element 
             h3.container-text Total Likes 
-            h1.container-counter #{totalLikes}
+            h1.container-counter #{totalLikes || 0}
           .container-element 
             h3.container-text Total Post 
             h1.container-counter #{totalPosts}

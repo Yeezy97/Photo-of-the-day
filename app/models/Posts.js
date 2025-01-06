@@ -344,7 +344,7 @@ class Post {
   async queryTotalLikes(req, res) {
     try {
       let sql =
-        "SELECT SUM(like_count) AS total_likes FROM post GROUP BY user_id = ?";
+        "SELECT SUM(like_count) AS total_likes FROM post WHERE user_id = ?";
       return await db.query(sql, [req.user.userId]);
     } catch (dbError) {
       console.error("Database query error:", dbError);
@@ -358,7 +358,7 @@ class Post {
 
   async queryTotalPosts(req, res) {
     try {
-      let sql = "SELECT COUNT(*) AS total_posts FROM post GROUP BY user_id = ?";
+      let sql = "SELECT COUNT(*) AS total_posts FROM post WHERE user_id = ?";
       return await db.query(sql, [req.user.userId]);
     } catch (dbError) {
       console.error("Database query error:", dbError);

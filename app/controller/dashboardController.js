@@ -109,7 +109,7 @@ const editProfile = async (req, res) => {
   let userModel = new User(req.user.email);
 
   const imageKey = randomImageName();
-  if (req.file) {
+  if (req.file && req.file?.buffer) {
     const params = {
       Bucket: bucketName,
       Key: imageKey,
@@ -148,12 +148,17 @@ const editProfile = async (req, res) => {
   try {
     userdetails = await userModel.getUserDetails(req.user.email);
 
-    let getObjParams = {
-      Bucket: bucketName,
-      Key: userdetails.profile_pic_url,
-    };
-    let command = new GetObjectCommand(getObjParams);
-    let url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    let url = "";
+    if (userdetails.profile_pic_url === "/image/profileImage.png") {
+      url = "/image/profileImage.png";
+    } else {
+      let getObjParams = {
+        Bucket: bucketName,
+        Key: userdetails.profile_pic_url,
+      };
+      let command = new GetObjectCommand(getObjParams);
+      url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    }
 
     const user = {
       userId: userdetails.user_id,

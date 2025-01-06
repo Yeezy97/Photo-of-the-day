@@ -233,48 +233,59 @@ const getCreatePost = async function (req, res) {
 const createPost = async function (req, res) {
   let postModel = new Post();
   try {
-    const imageKey = randomImageName();
-    const params = {
-      Bucket: bucketName,
-      Key: imageKey,
-      Body: req.file.buffer,
-      ContentType: req.file.mimetype,
-    };
+    if (
+      req.user.userId &&
+      req.body.title &&
+      req.body.description &&
+      req.body.location &&
+      req.file
+    ) {
+      const imageKey = randomImageName();
+      const params = {
+        Bucket: bucketName,
+        Key: imageKey,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+      };
 
-    // save image to s3 bucket
-    const command = new PutObjectCommand(params);
-    await s3.send(command);
+      // save image to s3 bucket
+      const command = new PutObjectCommand(params);
+      await s3.send(command);
 
-    // query all categories from db
-    let categoryResult = await postModel.queryCategoryByName(req, res);
+      // query all categories from db
+      let categoryResult = await postModel.queryCategoryByName(req, res);
 
-    // if category already exist
-    if (categoryResult.length > 0) {
-      // add post data in db
+      // if category already exist
+      if (categoryResult.length > 0) {
+        // add post data in db
 
-      let addPost_result = await postModel.queryAddPost(
-        req,
-        res,
-        imageKey,
-        categoryResult
-      );
+        let addPost_result = await postModel.queryAddPost(
+          req,
+          res,
+          imageKey,
+          categoryResult
+        );
 
-      // if it is a new category
+        // if it is a new category
+      } else {
+        let addPostWithCategory_result =
+          await postModel.queryAddPostWithCategory(req, res);
+      }
+
+      // query latest category list, and return in frontend
+      let category_result = await postModel.getAllCategory(req, res);
+
+      res.json({
+        user: req.user,
+        options: category_result,
+        status: true,
+      });
     } else {
-      let addPostWithCategory_result = await postModel.queryAddPostWithCategory(
-        req,
-        res
-      );
+      res.json({
+        user: req.user,
+        status: false,
+      });
     }
-
-    // query latest category list, and return in frontend
-    let category_result = await postModel.getAllCategory(req, res);
-
-    res.json({
-      user: req.user,
-      options: category_result,
-      status: true,
-    });
   } catch (error) {
     res.json({
       user: req.user,

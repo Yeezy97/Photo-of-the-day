@@ -13,19 +13,19 @@ block main
                         .sign-up-name-group
                             .input-group
                                 label(for='fname') First Name
-                                input(type='text', id='fname', name='fname', required)
+                                input(type='text', id='fname', name='fname',minlength="1", required)
                             .input-group
                                 label(for='lname') Last Name
-                                input(type='text', id='lname', name='lname', required)
+                                input(type='text', id='lname', name='lname',minlength="1", required)
                         .input-group
                             label(for='username') Username
-                            input(type='text', id='username', name='username', required)
+                            input(type='text', id='username', name='username',minlength="1", required)
                         .input-group
                             label(for='email') Email
                             input(type='email', id='email', name='email', required)
                         .input-group
                             label(for='password') Password
-                            input(type='password', id='password', name='password', required)
+                            input(type='password', id='password', name='password', minlength="5", required)
                         .input-group-gender 
                             <label for="gender">Gender:</label>
                             <select id="gender" name="gender">

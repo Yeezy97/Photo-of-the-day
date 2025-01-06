@@ -49,12 +49,12 @@ class User {
   // Add a new record to the users table
   async addUser(email, password, username, fname, lname, gender) {
     let profile_pic_url = "/image/profileImage.png";
-    // const pw = await bcrypt.hash(password, 10);
+    const pw = await bcrypt.hash(password, 10);
     var sql =
       "INSERT INTO User (email, password,username, first_name, last_name, gender, profile_pic_url) VALUES (? , ?, ? ,? ,?,?, ?)";
     const result = await db.query(sql, [
       email,
-      password,
+      pw,
       username,
       fname,
       lname,
@@ -99,7 +99,8 @@ class User {
     const result = await db.query(sql, [this.id]);
     //   const match = await bcrypt.compare(submitted, result[0].password);
 
-    if (result && result[0].password === password) {
+    const match = await bcrypt.compare(password, result[0].password);
+    if (result && match) {
       let userObj = {
         user_id: result[0].user_id,
         username: result[0].username,

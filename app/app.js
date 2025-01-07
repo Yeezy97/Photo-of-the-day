@@ -1,26 +1,15 @@
 // Import express.js
 const express = require("express");
 const path = require("path");
-const multer = require("multer");
-const {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-} = require("@aws-sdk/client-s3");
+
 const dotenv = require("dotenv");
-const crypto = require("crypto");
 
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken");
-
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const dashboardRouter = require("./routes/dashboardRoutes");
 const homepageRouter = require("./routes/homepageRoutes");
 const authRouter = require("./routes/authRoutes");
-const { User } = require("./models/Users");
 
 const cron = require("node-cron");
 
@@ -28,8 +17,6 @@ dotenv.config();
 
 // Create express app
 const app = express();
-
-const secretKey = process.env.TOKEN_SECRET_KEY;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.json()); // json data to req.body
@@ -39,60 +26,13 @@ app.use(cookieParser());
 // Add static files location
 app.use(express.static("public"));
 
-// Multer settings
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
-const bucketName = process.env.BUCKET_NAME;
-const bucketRegion = process.env.BUCKET_REGION;
-const accessKey = process.env.BUCKET_ACCESS_KEY;
-const secretAccessKey = process.env.BUCKET_SECRET_KEY;
-
-const s3 = new S3Client({
-  credentials: {
-    accessKeyId: accessKey,
-    secretAccessKey: secretAccessKey,
-  },
-  region: bucketRegion,
-});
-
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "./views/pages"));
 
 app.use(express.static("public"));
-console.log("Serving static files from:", path.join(__dirname, "public"));
-
-const randomImageName = (bytes = 32) =>
-  crypto.randomBytes(bytes).toString("hex");
-
-// console.log(app.get("views"), "----------------loggg");
-function generateLongRandomNumberArray(length) {
-  return Array.from({ length }, () => Math.floor(Math.random() * 10)).join("");
-}
+// console.log("Serving static files from:", path.join(__dirname, "public"));
 
 // Schedule the task to run at midnight every day
-// cron.schedule("* * * * *", async () => {
-//   console.log("Task executed at:", new Date());
-//   try {
-//     let podSQL = `SELECT
-//     post_id,
-//     like_count
-// FROM
-//     post
-// WHERE
-//     created_at BETWEEN NOW() - INTERVAL 3 MINUTE AND NOW() - INTERVAL 1 MINUTE
-// ORDER BY
-//     like_count DESC;`;
-//     const podResult = await db.query(podSQL);
-
-//     console.log(podResult[0]);
-
-//     // res.json({
-//     //   message: "Data inserted successfully",
-//     //   likeCount: lastest_like_count,
-//     // });
-//   } catch (error) {}
-// });
 
 console.log(app.get("views"), "----------------loggg");
 // Get the functions in the db.js file to use

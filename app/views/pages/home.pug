@@ -3,35 +3,26 @@ include ../components/mixins.pug
 
 block main
   main
-    //- .main-section
-    //-     h3 All
-    //-     if posts && posts.length
-    //-         .cards
-    //-             each post in posts
-    //-                 +card({postId: post.post_id, userId: post.user_id,image_url: post.imageURL, title: post.title, username: post.username, profileUserImg: post.profileIMG, like_count: post.like_count, is_liked: post.is_liked, is_favourited: post.is_favourited})
-    //-     else
-    //-         p No posts available
     section.main-section
       // Photo of the Day Section
-      if photoOfTheDay
+      if pod
         .photo-of-the-day-container
+          h2 Photo of the Day
           .photo
             img(
-              src=photoOfTheDay.image_url ? "/" + photoOfTheDay.image_url : "/images/placeholder.png", 
-              alt=photoOfTheDay.title || "Photo of the Day"
+              src=`${pod.imageURL}`, alt=pod.title 
             )
           .details
-            h4= photoOfTheDay.title || "No title"
-            p.photo-description= photoOfTheDay.description || "No description available for this photo."
+            p Username:#{pod.title}
+            p.photo-description Location:#{pod.location}
       else
         p No photo-of-the-day available. Check back tomorrow!
 
       // Gallery Section
-     
       h3 Gallery
-    if posts && posts.length
-        .cards
-            each post in posts
-                +card({postId: post.post_id, userId: post.user_id,image_url: post.imageURL, title: post.title, username: post.username, profileUserImg: post.profileIMG, like_count: post.like_count, is_liked: post.is_liked, is_favourited: post.is_favourited})
-    else
-        p No posts available
+      if posts && posts.length
+          .cards
+              each post in posts
+                  +card({postId: post.post_id, userId: post.user_id,image_url: post.imageURL, title: post.title, username: post.username, profileUserImg: post.profileIMG, like_count: post.like_count, is_liked: post.is_liked, is_favourited: post.is_favourited})
+      else
+          p No posts available

@@ -1,5 +1,6 @@
 // library imports
 const dotenv = require("dotenv");
+const cron = require("node-cron");
 const {
   S3Client,
   GetObjectCommand,
@@ -26,6 +27,16 @@ const s3 = new S3Client({
   region: bucketRegion,
 });
 
+const getThePod = async () => {
+  const postModel = new Post();
+
+  let latest_pod_result = await postModel.queryLatestPod();
+
+  if (latest_pod_result.length > 0) {
+    return latest_pod_result[0];
+  }
+};
+
 const getAllPost = async (req, res) => {
   let token = req.cookies.token;
 
@@ -33,6 +44,23 @@ const getAllPost = async (req, res) => {
   verifyTokenExist(req, res);
 
   const postModel = new Post();
+
+  let latest_pod = await getThePod();
+  let pod_url = "";
+  // console.log(latest_pod);
+  try {
+    let getObjParams = {
+      Bucket: bucketName,
+      Key: latest_pod.image_url,
+    };
+    let command = new GetObjectCommand(getObjParams);
+    pod_url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+    latest_pod.imageURL = pod_url;
+  } catch (s3Error) {
+    console.error("Error fetching S3 URL:", s3Error);
+    res.json({ message: "someting went wrong" });
+  }
 
   // console.log(req.cookies.token);
   if (token) {
@@ -61,7 +89,7 @@ const getAllPost = async (req, res) => {
         p.imageURL = url;
       }
 
-      res.render("home", { posts: results, user: req.user });
+      res.render("home", { posts: results, user: req.user, pod: latest_pod });
     } catch (s3Error) {
       console.error("Error fetching S3 URL:", s3Error);
     }
@@ -88,7 +116,7 @@ const getAllPost = async (req, res) => {
         p.profileIMG = profileURL;
       }
 
-      res.render("home", { posts: results });
+      res.render("home", { posts: results, pod: latest_pod });
     } catch (s3Error) {
       console.error("Error fetching S3 URL:", s3Error);
     }
@@ -119,7 +147,7 @@ const getCategoryById = async (req, res) => {
   const postModel = new Post();
 
   try {
-    const results = await postModel.queryCategoryById(category_name);
+    let results = await postModel.queryCategoryById(category_name);
 
     for (let p of results) {
       let getObjParams = {
@@ -133,6 +161,7 @@ const getCategoryById = async (req, res) => {
 
     // set todays date
     if (category_name === "today") {
+      results = await postModel.queryCategoryById(category_name);
       category_name += ` - ${date}, ${monthName} ${year}`;
     }
     res.render("categorized-page", {
@@ -293,6 +322,22 @@ const createPost = async function (req, res) {
     });
   }
 };
+
+// Runs every minute to check the photo of the day
+// normally will run every 24hours
+cron.schedule("* * * * *", async () => {
+  let postModel = new Post();
+
+  console.log("Task executed at:", new Date());
+
+  let pod_result = await postModel.queryPod();
+
+  console.log(pod_result);
+
+  if (pod_result[0] && pod_result[0].like_count > 0) {
+    let add_pod_result = await postModel.queryAddPod(pod_result[0].post_id);
+  }
+});
 
 module.exports = {
   getAllPost,

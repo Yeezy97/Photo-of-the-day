@@ -421,18 +421,30 @@ button:hover {
   flex-direction: column;
   align-items: center;
   margin: 20px auto;
-  padding: 20px;
-  background: #f9f9f9;
+  padding: 15px;
+  /* background: #f9f9f9; */
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
+  width: fit-content;
+  /* max-width: 800px; */
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+
+  /* border-radius: 1rem; */
+  background: rgba(214, 214, 214, 0.3);
 }
 
 .photo-of-the-day-container .photo img {
-  width: 100%;
-  height: auto;
+  width: 18rem;
+  height: 25rem;
   border-radius: 8px;
+}
+
+.photo-of-the-day-container h2 {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin-bottom: 1rem;
 }
 
 .photo-of-the-day-container .details {
@@ -688,7 +700,6 @@ button:hover {
   align-items: center;
   overflow: auto;
 }
-
 
 .counter-container {
   display: flex;

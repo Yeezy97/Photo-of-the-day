@@ -117,9 +117,14 @@ const editProfile = async (req, res) => {
       ContentType: req.file.mimetype,
     };
 
-    // save image to s3 bucket
-    const command = new PutObjectCommand(params);
-    await s3.send(command);
+    try {
+      // save image to s3 bucket
+      const command = new PutObjectCommand(params);
+      await s3.send(command);
+    } catch (s3Error) {
+      console.log("Error from s3", s3Error);
+      res.json({ message: "Someting went wrong try again" });
+    }
 
     let userProfilePicupdated = await userModel.updateUserProfilePic(
       req.user.email,
@@ -156,8 +161,14 @@ const editProfile = async (req, res) => {
         Bucket: bucketName,
         Key: userdetails.profile_pic_url,
       };
-      let command = new GetObjectCommand(getObjParams);
-      url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+      try {
+        let command = new GetObjectCommand(getObjParams);
+        url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+      } catch (s3Error) {
+        console.log("Error from s3", s3Error);
+        res.json({ message: "Someting went wrong try again" });
+      }
     }
 
     const user = {

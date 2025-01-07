@@ -148,6 +148,49 @@ class Post {
     }
   }
 
+  async queryCategoryToday(categoryName) {
+    let sql = `SELECT 
+    Post.post_id,
+    Post.title,
+    Post.image_url,
+    Post.description,
+    Post.location,
+    Post.created_at AS post_created_at,
+    User.user_id, 
+    User.username, 
+    User.email, 
+    User.profile_pic_url, 
+    User.gender, 
+    User.first_name, 
+    User.last_name, 
+    User.dob, 
+    User.age,
+    User.created_at AS user_created_at 
+FROM 
+    Post 
+JOIN 
+    User ON Post.user_id = User.user_id
+JOIN 
+    Post_Category ON Post.post_id = Post_Category.post_id
+JOIN 
+    Category ON Post_Category.category_id = Category.category_id 
+WHERE 
+    Category.category_name = ?
+    AND DATE(Post.created_at) = ?;`;
+
+    try {
+      const results = await db.query(sql, [categoryName]);
+      return results;
+    } catch (dbError) {
+      console.error("Database query error:", dbError);
+      res
+        .status(500)
+        .send(
+          "An error occurred while retrieving posts. Please try again later."
+        );
+    }
+  }
+
   async queryFavouritePost(req, res) {
     try {
       let sql = `
@@ -368,6 +411,53 @@ class Post {
           "An error occurred while retrieving posts. Please try again later."
         );
     }
+  }
+
+  async queryPod(req, res) {
+    try {
+      let podSQL = `SELECT 
+    post_id, 
+    like_count 
+FROM 
+    post
+WHERE 
+    created_at BETWEEN NOW() - INTERVAL 3 MINUTE AND NOW() - INTERVAL 1 MINUTE
+ORDER BY 
+    like_count DESC
+LIMIT 1;`;
+      return await db.query(podSQL);
+    } catch (dbError) {
+      console.error("Database query error:", dbError);
+      res
+        .status(500)
+        .send(
+          "An error occurred while retrieving posts. Please try again later."
+        );
+    }
+  }
+
+  async queryAddPod(post_id) {
+    let sql = `INSERT INTO pod (post_id) VALUES (?);`;
+    await db.query(sql, [post_id]);
+  }
+
+  async queryLatestPod() {
+    let sql = `SELECT 
+    * 
+FROM 
+    post
+WHERE 
+    post_id = (
+        SELECT 
+            post_id 
+        FROM 
+            post
+        ORDER BY 
+            created_at DESC
+        LIMIT 1
+    );`;
+
+    return await db.query(sql);
   }
 }
 
